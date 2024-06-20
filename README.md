@@ -26,6 +26,14 @@ npm run build
 npm run prod
 ```
 
+### Use drizzle-kit to pull DDL from existing database
+
+Note: If you are connecting to supabase, make sure to use Session mode in your supabase project's database settings.
+
+```bash
+npm run introspect
+```
+
 ## Test
 
 How to run test scripts
@@ -44,9 +52,9 @@ npm run test:cov
 
 ## Documentation
 
-- Here is our [Official Documentation](https://expresso-ts.com/)
-- Checkout our [First Steps documentation](https://expresso-ts.com/docs/overview/first-steps)
-- Our [CLI Documentation](https://expresso-ts.com/docs/category/cli)
+-   Here is our [Official Documentation](https://expresso-ts.com/)
+-   Checkout our [First Steps documentation](https://expresso-ts.com/docs/overview/first-steps)
+-   Our [CLI Documentation](https://expresso-ts.com/docs/category/cli)
 
 ## Questions
 
@@ -62,12 +70,12 @@ Before you create an issue, please make sure you read the [Contribution Guidelin
 
 Expresso TS is an MIT-licensed open source project. It's an independent project with ongoing development made possible thanks to your support. If you'd like to help, please consider:
 
-- Become a sponsor on **[Sponsor no GitHub](https://github.com/sponsors/expressots)**
-- Follow the **[organization](https://github.com/expressots)** on GitHub and Star ⭐ the project
-- Subscribe to the Twitch channel: **[Richard Zampieri](https://www.twitch.tv/richardzampieri)**
-- Join our **[Discord](https://discord.com/invite/PyPJfGK)**
-- Contribute submitting **[issues and pull requests](https://github.com/expressots/expressots/issues/new/choose)**
-- Share the project with your friends and colleagues
+-   Become a sponsor on **[Sponsor no GitHub](https://github.com/sponsors/expressots)**
+-   Follow the **[organization](https://github.com/expressots)** on GitHub and Star ⭐ the project
+-   Subscribe to the Twitch channel: **[Richard Zampieri](https://www.twitch.tv/richardzampieri)**
+-   Join our **[Discord](https://discord.com/invite/PyPJfGK)**
+-   Contribute submitting **[issues and pull requests](https://github.com/expressots/expressots/issues/new/choose)**
+-   Share the project with your friends and colleagues
 
 ## License
 

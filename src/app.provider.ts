@@ -6,6 +6,7 @@ import {
     ProviderManager,
 } from "@expressots/core";
 import { container } from "./app.container";
+import { DrizzleProvider } from "./db/drizzle/drizzle.provider";
 
 export class App extends AppExpress {
     private middleware: IMiddleware;
@@ -28,7 +29,10 @@ export class App extends AppExpress {
         if (this.isDevelopment()) {
             this.provider.get(Env).checkAll();
         }
+        container.get(DrizzleProvider).Drizzle; //fix
     }
 
-    protected serverShutdown(): void | Promise<void> {}
+    protected serverShutdown(): void | Promise<void> {
+        container.get(DrizzleProvider).closePool;
+    }
 }
