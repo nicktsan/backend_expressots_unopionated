@@ -13,11 +13,11 @@ export class UserFindUseCase {
     async execute(
         email: string,
         password_hash: string,
-        payload: UserFindRequestDTO,
+        // payload: UserFindRequestDTO,
     ): Promise<UserFindResponseDTO | null> {
-        console.log(payload)
-        console.log("email and password_hash from UserFindUseCase:")
-        console.log(email, password_hash)
+        // console.log(payload)
+        // console.log("email and password_hash from UserFindUseCase:")
+        // console.log(email, password_hash)
         const userExists = await this.userRepository.findByEmailAndPw(email, password_hash);
 
         if (!userExists) {

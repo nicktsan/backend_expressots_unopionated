@@ -2,7 +2,7 @@ import { BaseController, StatusCode } from "@expressots/core";
 import { Response } from "express";
 import { UserFindRequestDTO, UserFindResponseDTO } from "./user-find.dto";
 import { UserFindUseCase } from "./user-find.usecase";
-import { Get, controller, param, response, headers } from "@expressots/adapter-express";
+import { Get, controller, response, headers } from "@expressots/adapter-express";
 
 @controller("/user/find")
 export class UserFindController extends BaseController {

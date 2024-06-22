@@ -1,5 +1,5 @@
 import "reflect-metadata";
-
+// const { default: lucia } = await import('lucia');
 import { AppFactory } from "@expressots/core";
 import { ServerEnvironment } from "@expressots/adapter-express";
 import { container } from "./app.container";

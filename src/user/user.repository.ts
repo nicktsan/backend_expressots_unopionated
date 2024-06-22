@@ -11,13 +11,9 @@ export class UserRepository extends BaseRepository<User> {
         this.tableName = userTable;
     }
 
-    async findByEmailAndPw(email: string, password_hash: string): Promise<User | null> {//todo
+    async findByEmailAndPw(email: string, password_hash: string): Promise<User | null> {
 
         try {
-            // const res = await client.query(
-            //     `SELECT * FROM users WHERE email = $1`,
-            //     [email],
-            // );
             const res = await this.db.select({
                 id: userTable.id,
                 username: userTable.username,
