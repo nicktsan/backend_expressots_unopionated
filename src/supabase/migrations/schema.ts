@@ -1,6 +1,8 @@
-import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp } from "drizzle-orm/pg-core"
-  import { sql } from "drizzle-orm"
+import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema } from "drizzle-orm/pg-core"
+//   import { sql } from "drizzle-orm"
+// import { create } from "node:domain"
 
+export const auth = pgSchema("auth");
 export const aal_level = pgEnum("aal_level", ['aal1', 'aal2', 'aal3'])
 export const code_challenge_method = pgEnum("code_challenge_method", ['s256', 'plain'])
 export const factor_status = pgEnum("factor_status", ['unverified', 'verified'])
@@ -40,24 +42,14 @@ export const cards = pgTable("cards", {
 });
 
 export const userTable = pgTable("user", {
-	id: text("id").primaryKey().notNull(),
+	id: uuid("id").primaryKey().notNull(),
 	username: text("username").unique().notNull(),
 	email: text("email").unique().notNull(),
-	password_hash: text("password_hash").notNull(),
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 },
 (table) => {
 	return {
 		user_username_key: unique("user_username_key").on(table.username),
 	}
 });
-// To be used with lucia auth.
-// export const sessionTable = pgTable("session", {
-// 	id: text("id").primaryKey(),
-// 	userId: text("user_id")
-// 		.notNull()
-// 		.references(() => userTable.id),
-// 	expiresAt: timestamp("expires_at", {
-// 		withTimezone: true,
-// 		mode: "date"
-// 	}).notNull()
-// });

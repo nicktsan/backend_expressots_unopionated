@@ -1,3 +1,10 @@
+# Additional setup outside of Expresso TS
+
+-   Change minimum password length to 8 in supabase prod
+-   Change Email template for sign up in supabase prod
+-   Configure Site URLs and Redirect URLS in supabase prod
+-   Configure SMTP settings in Resend and Supabase for prod
+
 # Expresso TS
 
 A Typescript + [Node.js]("https://nodejs.org/en/") lightweight framework for quick building scalable, easy to read and maintain, server-side applications 🚀

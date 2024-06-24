@@ -4,6 +4,7 @@ import {IAuthSupabaseConfirmSignupRequestDto} from "./auth-supabase-confirmSignu
 import { AuthSupabaseConfirmUsecase } from "./auth-supabase-confirmSignup.usecase";
 import cookieParser from "cookie-parser";
 import { ISupabaseClientContext } from "../supabase.client.context";
+import { StringDictionary } from "../../../stringDictionary";
 
 @controller("/auth/confirm")
 export class AuthSupabaseConfirmSignupController {
@@ -38,8 +39,8 @@ export class AuthSupabaseConfirmSignupController {
         }
         const confirmEmailResponse = await this.authSupabaseConfirmUsecase.execute(confirmRequest, clientContext);
         if (confirmEmailResponse) {
-            // res.redirect(303, `/${next.slice(1)}`)
-            res.send("Email confirmed successfully");
+            res.redirect(303, `http://localhost:3000`)
+            // res.send("Email confirmed successfully");
             
         }
         // res.redirect(303, '/auth/auth-code-error')

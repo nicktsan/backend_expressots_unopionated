@@ -15,6 +15,13 @@
       "when": 1718835060186,
       "tag": "0003_friendly_raider",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1719253659466,
+      "tag": "0004_hesitant_stingray",
+      "breakpoints": true
     }
   ]
 }

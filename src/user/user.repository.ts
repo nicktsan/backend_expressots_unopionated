@@ -1,17 +1,31 @@
-import { User } from "./user.entity";
+import { UserEntity } from "./user.entity";
 import { BaseRepository } from "../base-repository";
 import { provide } from "inversify-binding-decorators";
 import { userTable } from "../supabase/migrations/schema";
 import { eq, and } from 'drizzle-orm';
 
 @provide(UserRepository)
-export class UserRepository extends BaseRepository<User> {
+export class UserRepository extends BaseRepository<UserEntity> {
     constructor() {
         super();
-        this.tableName = userTable;
+        this.table = userTable;
+    }
+    async create(item: UserEntity): Promise<UserEntity | null> {
+        try {
+            const res: UserEntity[] = await this.db.insert(userTable).values(item).returning({
+                    id: userTable.id,
+                    username: userTable.username,
+                    email: userTable.email
+                });
+            return res[0]
+        } catch (error) {
+            console.log("error occured while creating user: ")
+            console.log(error)
+            return null
+        }
     }
 
-    async findByEmailAndPw(email: string, password_hash: string): Promise<User | null> {
+    async findByEmail(email: string, password_hash: string): Promise<UserEntity | null> {
 
         try {
             const res = await this.db.select({
@@ -20,13 +34,12 @@ export class UserRepository extends BaseRepository<User> {
                 email: userTable.email
             }).from(userTable).where(
                 and(
-                    eq(userTable.email, email),
-                    eq(userTable.password_hash, password_hash)
+                    eq(userTable.email, email)
                 )
             );
-            console.log("res from findByEmailAndPw:")
+            console.log("res from findByEmail:")
             console.log(res);
-            return res[0] as User;
+            return res[0] as UserEntity;
         } finally {
             
         }

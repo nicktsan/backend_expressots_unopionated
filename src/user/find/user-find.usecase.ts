@@ -18,7 +18,7 @@ export class UserFindUseCase {
         // console.log(payload)
         // console.log("email and password_hash from UserFindUseCase:")
         // console.log(email, password_hash)
-        const userExists = await this.userRepository.findByEmailAndPw(email, password_hash);
+        const userExists = await this.userRepository.findByEmail(email, password_hash);
 
         if (!userExists) {
             const error = this.report.error(
