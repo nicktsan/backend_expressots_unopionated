@@ -10,6 +10,6 @@ export const appContainer: AppContainer = new AppContainer({
 export const container = appContainer.create([
     // Add your modules here
     AppModule,
-    // AuthModule,
+    AuthModule,
     UserModule,
 ]);

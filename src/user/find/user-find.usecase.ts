@@ -1,9 +1,9 @@
-import { Report, StatusCode } from "@expressots/core";
+import { Report, StatusCode, provideSingleton } from "@expressots/core";
 import { UserRepository } from "./../user.repository";
 import { provide } from "inversify-binding-decorators";
 import { UserFindRequestDTO, UserFindResponseDTO } from "./user-find.dto";
 
-@provide(UserFindUseCase)
+@provideSingleton(UserFindUseCase)
 export class UserFindUseCase {
     constructor(
         private userRepository: UserRepository,

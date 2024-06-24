@@ -1,19 +1,21 @@
-import { Lucia } from "lucia";
 import { provide } from "inversify-binding-decorators";
-import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { sessionTable, userTable } from "../../supabase/migrations/schema"
+// import { sessionTable, userTable } from "../../supabase/migrations/schema"
 import { container } from "./../../app.container"
 import { DrizzleProvider } from "../../db/drizzle/drizzle.provider";
 import { z } from "zod"
-// import type { Lucia } from "lucia";
+import type { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
+import type { Lucia } from "lucia";
 
 export let lucia: Lucia<Record<never, never>, Record<never, never>>;
 export let adapter: DrizzlePostgreSQLAdapter;
 @provide(LuciaProvider)
 export class LuciaProvider {
-	private initAdapter(): void {
+	private async initAdapter(): Promise<void> {
+		console.log("Initializing Lucia adapter")
 		if (!adapter) {
-			adapter = new DrizzlePostgreSQLAdapter(container.get(DrizzleProvider).Drizzle, sessionTable, userTable);
+			const { DrizzlePostgreSQLAdapter } = await import("@lucia-auth/adapter-drizzle");
+			// adapter = new DrizzlePostgreSQLAdapter(container.get(DrizzleProvider).Drizzle, sessionTable, userTable);
+			// adapter = new DrizzlePostgreSQLAdapter(container.get(DrizzleProvider).Drizzle, sessionTable, userTable);
 			console.log("Adapter created")
 		}
 		else {
@@ -21,15 +23,17 @@ export class LuciaProvider {
 		}
 	}
 
-	public get Adapter(): DrizzlePostgreSQLAdapter {
-		this.initAdapter();
+	public async getAdapter(): Promise<DrizzlePostgreSQLAdapter>{
+		await this.initAdapter();
 		return adapter;
 	}
 
 	// IMPORTANT!
-	public get LuciaInstance(): Lucia<Record<never, never>, Record<never, never>> {
+	public async getLuciaInstance(): Promise<Lucia<Record<never, never>, Record<never, never>>> {
+		console.log("Getting Lucia instance")
 		if (!lucia) {
-			this.initAdapter()
+			await this.initAdapter()
+			const { Lucia } = await import("lucia");
 			lucia = new Lucia(adapter, {
 				sessionCookie: {
 					attributes: {
@@ -55,7 +59,7 @@ export class LuciaProvider {
 	}
 
 	protected validEmailSchema = z.string().email()
-	protected validPasswordSchema = z.string().min(6)
+	protected validPasswordSchema = z.string().min(8)
 	protected validUsernameSchema = z.string().min(3).max(31).regex(/^[a-z0-9_-]+$/)
 	public isValid(val: string, schema: string): boolean {
 		let schemaToUse: z.ZodString | null = null;
@@ -69,12 +73,14 @@ export class LuciaProvider {
 			schemaToUse = this.validUsernameSchema
 		}
 		if (!schemaToUse) {
-			console.log("Invalid schema")
+			console.log("Invalid" + schema + "schema")
 			return false
 		}
 		try {
 			//check if the value matches any of the username, email, or password schemas
+			console.log("Parsing val in isValid:", val)
 			const result = schemaToUse!.safeParse(val);
+			console.log("Result of parsing val in isValid:", result)
 			if (!result.success) {
 				// handle error then return
 				console.log(result.error)
@@ -84,6 +90,7 @@ export class LuciaProvider {
 				return true
 			}
 		} catch (error) {
+			console.log("Error caught in isValid while parsing " + val)
 			console.log(error)
 			return false
 		}

@@ -50,14 +50,14 @@ export const userTable = pgTable("user", {
 		user_username_key: unique("user_username_key").on(table.username),
 	}
 });
-
-export const sessionTable = pgTable("session", {
-	id: text("id").primaryKey(),
-	userId: text("user_id")
-		.notNull()
-		.references(() => userTable.id),
-	expiresAt: timestamp("expires_at", {
-		withTimezone: true,
-		mode: "date"
-	}).notNull()
-});
+// To be used with lucia auth.
+// export const sessionTable = pgTable("session", {
+// 	id: text("id").primaryKey(),
+// 	userId: text("user_id")
+// 		.notNull()
+// 		.references(() => userTable.id),
+// 	expiresAt: timestamp("expires_at", {
+// 		withTimezone: true,
+// 		mode: "date"
+// 	}).notNull()
+// });

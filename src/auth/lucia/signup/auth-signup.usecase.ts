@@ -1,5 +1,5 @@
 import { provide } from "inversify-binding-decorators";
-import { LuciaRepository } from "../lucia/lucia.repository";
+import { LuciaRepository } from "../lucia.repository";
 import { IAuthSignupRequestDto, IAuthSignupResponseDto } from "./auth-signup.dto";
 import { Report, StatusCode } from "@expressots/core";
 
@@ -13,8 +13,8 @@ export class AuthSignupUsecase {
     async execute(
         request: IAuthSignupRequestDto,
     ): Promise<IAuthSignupResponseDto> {
+        console.log("Executing SignUp with request: ", request)
         const signUpStatus = await this.luciaRepository.signUp(request);
-
         if (!signUpStatus) {
             const error = this.report.error(
                 "User sign up failed",

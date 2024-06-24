@@ -3,6 +3,7 @@ import { Response } from "express";
 import { UserFindRequestDTO, UserFindResponseDTO } from "./user-find.dto";
 import { UserFindUseCase } from "./user-find.usecase";
 import { Get, controller, response, headers } from "@expressots/adapter-express";
+import { inject } from "inversify";
 
 @controller("/user/find")
 export class UserFindController extends BaseController {

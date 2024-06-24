@@ -29,7 +29,7 @@ export class App extends AppExpress {
         if (this.isDevelopment()) {
             this.provider.get(Env).checkAll();
         }
-        container.get(DrizzleProvider).Drizzle; //fix
+        // container.get(DrizzleProvider).Drizzle; //fix
     }
 
     protected serverShutdown(): void | Promise<void> {
