@@ -1,8 +1,8 @@
-import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema } from "drizzle-orm/pg-core"
+import { relations } from "drizzle-orm";
+import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema, serial, AnyPgColumn, foreignKey } from "drizzle-orm/pg-core"
 //   import { sql } from "drizzle-orm"
 // import { create } from "node:domain"
 
-export const auth = pgSchema("auth");
 export const aal_level = pgEnum("aal_level", ['aal1', 'aal2', 'aal3'])
 export const code_challenge_method = pgEnum("code_challenge_method", ['s256', 'plain'])
 export const factor_status = pgEnum("factor_status", ['unverified', 'verified'])
@@ -50,6 +50,64 @@ export const userTable = pgTable("user", {
 },
 (table) => {
 	return {
-		user_username_key: unique("user_username_key").on(table.username),
+		username_unique: unique("username_unique").on(table.username),
+		email_unique: unique("email_unique").on(table.email),
 	}
 });
+
+export const deckFolderTable= pgTable("deckfolder", {
+	id: serial("id").primaryKey().notNull(),
+	name: text("name").notNull(),
+	creator_id: uuid("creator_id").notNull().references((): AnyPgColumn => userTable.id, {onDelete: 'cascade'}),
+	parent_folder_id: integer("parent_folder_id").references((): AnyPgColumn => deckFolderTable.id, {onDelete: 'cascade'}),
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const deckTable = pgTable("deck", {
+	id: serial("id").primaryKey().notNull(),
+	name: text("name").unique().notNull(),
+	creator_id: uuid("creator_id").notNull().references(() => userTable.id, {onDelete: 'cascade'}),
+	folder_id: integer("folder_id").references(() => deckFolderTable.id, {onDelete: 'cascade'}),
+	banner: text("banner"),
+	description: text("description"),
+	views: integer("views").notNull().default(0),
+	visibility: text("visibility").notNull().default("public"),
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const userRelations = relations(userTable, ({ many }) => ({
+	folders: many(deckFolderTable, { relationName: 'folders' }),
+	decks: many(deckTable, { relationName: 'decks' }),
+}));
+
+export const folderRelations = relations(deckFolderTable, ({ one }) => ({
+	folderCreator: one(userTable, {
+		fields: [deckFolderTable.creator_id],
+		references: [userTable.id],
+		relationName: 'folderCreator'
+	}),
+	parentFolder: one(deckFolderTable, {
+		fields: [deckFolderTable.parent_folder_id],
+		references: [deckFolderTable.id],
+		relationName: 'parentFolder'
+	 })
+}));
+
+export const folderChildrenRelation = relations(deckFolderTable, ({ many }) => ({
+	childFolders: many(deckFolderTable , {relationName: 'childFolders'}),
+}));
+
+export const deckRelations = relations(deckTable, ({ one }) => ({
+	deckCreator: one(userTable, {
+		fields: [deckTable.creator_id],
+		references: [userTable.id],
+		relationName: 'deckCreator'
+	}),
+	folder: one(deckFolderTable, {
+		fields: [deckTable.folder_id],
+		references: [deckFolderTable.id],
+		relationName: 'folder'
+	 })
+}));

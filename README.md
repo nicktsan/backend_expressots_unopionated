@@ -41,6 +41,22 @@ Note: If you are connecting to supabase, make sure to use Session mode in your s
 npm run introspect
 ```
 
+### Use drizzle-kit to generate SQL scripts for migration
+
+Note: If you are connecting to supabase, make sure to use Session mode in your supabase project's database settings.
+
+```bash
+npm run generate
+```
+
+### Use drizzle-kit to apply SQL scripts to your database
+
+Note: If you are connecting to supabase, make sure to use Session mode in your supabase project's database settings.
+
+```bash
+npm run migrate
+```
+
 ## Test
 
 How to run test scripts
