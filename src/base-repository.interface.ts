@@ -3,5 +3,5 @@ export interface IBaseRepository<T> {
     // update(item: T): Promise<T | null>;
     // delete(id: string): Promise<boolean>;
     find(id: string): Promise<T | null>;
-    // findAll(): Promise<T[]>;
+    findAll(item: T): Promise<T[]>;
 }

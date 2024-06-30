@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema, serial, AnyPgColumn, foreignKey } from "drizzle-orm/pg-core"
+import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema, serial, AnyPgColumn, foreignKey, primaryKey } from "drizzle-orm/pg-core"
 //   import { sql } from "drizzle-orm"
 // import { create } from "node:domain"
 
@@ -56,25 +56,38 @@ export const userTable = pgTable("user", {
 });
 
 export const deckFolderTable= pgTable("deckfolder", {
-	id: serial("id").primaryKey().notNull(),
+	id: uuid("id").primaryKey().notNull(),
 	name: text("name").notNull(),
 	creator_id: uuid("creator_id").notNull().references((): AnyPgColumn => userTable.id, {onDelete: 'cascade'}),
-	parent_folder_id: integer("parent_folder_id").references((): AnyPgColumn => deckFolderTable.id, {onDelete: 'cascade'}),
+	parent_folder_id: uuid("parent_folder_id").references((): AnyPgColumn => deckFolderTable.id, {onDelete: 'cascade'}),
 	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
 	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
 export const deckTable = pgTable("deck", {
-	id: serial("id").primaryKey().notNull(),
+	id: uuid("id").primaryKey().notNull(),
 	name: text("name").unique().notNull(),
 	creator_id: uuid("creator_id").notNull().references(() => userTable.id, {onDelete: 'cascade'}),
-	folder_id: integer("folder_id").references(() => deckFolderTable.id, {onDelete: 'cascade'}),
-	banner: text("banner"),
+	folder_id: uuid("folder_id").references(() => deckFolderTable.id, {onDelete: 'cascade'}),
+	banner: integer("banner").references(() => cards.id, {onDelete: 'set null'}),
 	description: text("description"),
 	views: integer("views").notNull().default(0),
 	visibility: text("visibility").notNull().default("public"),
 	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
 	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const deckslotTable = pgTable ("deckslot", {
+	deck_id: uuid("deck_id").notNull().references(() => deckTable.id, {onDelete: 'cascade'}),
+	card_id: integer("card_id").notNull().references(() => cards.id, {onDelete: 'cascade'}),
+	quantity: integer("quantity").notNull().default(1),
+	board: text("board").notNull().default("main"),
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+}, (table) => {
+	return {
+		pk: primaryKey({ name: 'deckslot_primarykey', columns: [table.deck_id, table.card_id, table.board] }),
+	};
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({
@@ -99,7 +112,7 @@ export const folderChildrenRelation = relations(deckFolderTable, ({ many }) => (
 	childFolders: many(deckFolderTable , {relationName: 'childFolders'}),
 }));
 
-export const deckRelations = relations(deckTable, ({ one }) => ({
+export const deckRelations = relations(deckTable, ({ one, many }) => ({
 	deckCreator: one(userTable, {
 		fields: [deckTable.creator_id],
 		references: [userTable.id],
@@ -109,5 +122,24 @@ export const deckRelations = relations(deckTable, ({ one }) => ({
 		fields: [deckTable.folder_id],
 		references: [deckFolderTable.id],
 		relationName: 'folder'
-	 })
+	 }),
+	banner: one(cards, {
+		fields: [deckTable.banner],
+		references: [cards.id],
+		relationName: 'banner'
+	}),
+	slots: many(deckslotTable, { relationName: 'slots' }),
+}));
+
+export const deckslotRelations = relations(deckslotTable, ({ one, many }) => ({
+	origindeck: one(deckTable, {
+		fields: [deckslotTable.deck_id],
+		references: [deckTable.id],
+		relationName: 'origindeck'
+	}),
+	cards: many(cards, { relationName: 'cards'}),
+}));
+
+export const cardRelations = relations(cards, ({ many }) => ({
+	bannerRef: many(deckTable , {relationName: 'bannerRef'}),
 }));

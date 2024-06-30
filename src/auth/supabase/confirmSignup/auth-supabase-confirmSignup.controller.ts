@@ -5,6 +5,7 @@ import { AuthSupabaseConfirmUsecase } from "./auth-supabase-confirmSignup.usecas
 import cookieParser from "cookie-parser";
 import { ISupabaseClientContext } from "../supabase.client.context";
 import { StringDictionary } from "../../../stringDictionary";
+import { AuthSupabaseMiddleware } from "../auth-supabase.middleware"
 
 @controller("/auth/confirm")
 export class AuthSupabaseConfirmSignupController {
@@ -24,8 +25,6 @@ export class AuthSupabaseConfirmSignupController {
         @response() res: Response,
     ): Promise<void> {
         next = next ?? "/"
-        // console.log("req: ");
-        // console.log(req.query);
         const confirmRequest: IAuthSupabaseConfirmSignupRequestDto = {
             token_hash,
             type,
@@ -44,6 +43,8 @@ export class AuthSupabaseConfirmSignupController {
             
         }
         // res.redirect(303, '/auth/auth-code-error')
-        res.send("Email confirmed failed");
+        else {
+            res.send("Email confirmed failed");
+        }
     }
 }

@@ -15,7 +15,9 @@ export class UserRepository extends BaseRepository<UserEntity> {
             const res: UserEntity[] = await this.db.insert(userTable).values(item).returning({
                     id: userTable.id,
                     username: userTable.username,
-                    email: userTable.email
+                    email: userTable.email,
+                    created_at: userTable.created_at,
+                    updated_at: userTable.updated_at,
                 });
             return res[0]
         } catch (error) {

@@ -9,7 +9,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 
 @provide(SupabaseRepository)
-export class SupabaseRepository extends BaseRepository<UserEntity>{//todo User entity as placeholder for now
+export class SupabaseRepository extends BaseRepository<UserEntity>{
 	protected supabase: SupabaseClient;
 	constructor(private supabaseProvider: SupabaseProvider) {
         super();

@@ -18,7 +18,7 @@ export class DrizzleProvider {
             console.log("Pool created");
         }
         else {
-            console.log("Pool already exists");
+            // console.log("Pool already exists");
         }
         // console.log(pool)
     }
@@ -35,7 +35,7 @@ export class DrizzleProvider {
             console.log("Drizzle created");
         }
         else {
-            console.log("Drizzle already exists");
+            // console.log("Drizzle already exists");
         }
         // console.log(db)
         return db

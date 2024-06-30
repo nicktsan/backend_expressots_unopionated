@@ -1,6 +1,6 @@
 {
-  "id": "1192b473-1112-4988-a5a1-e32ebc731237",
-  "prevId": "df3a9185-1b6d-4a8c-b079-3f39dc014ff3",
+  "id": "468e3f8a-c3fe-4c77-9383-b1fd05556c7a",
+  "prevId": "9dcb9cce-349d-43e3-8ebf-91645116f930",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -260,7 +260,7 @@
         },
         "banner": {
           "name": "banner",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -326,6 +326,19 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        },
+        "deck_banner_cards_id_fk": {
+          "name": "deck_banner_cards_id_fk",
+          "tableFrom": "deck",
+          "tableTo": "cards",
+          "columnsFrom": [
+            "banner"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -338,6 +351,92 @@
           ]
         }
       }
+    },
+    "public.deckslot": {
+      "name": "deckslot",
+      "schema": "",
+      "columns": {
+        "deck_id": {
+          "name": "deck_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "board": {
+          "name": "board",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'main'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deckslot_deck_id_deck_id_fk": {
+          "name": "deckslot_deck_id_deck_id_fk",
+          "tableFrom": "deckslot",
+          "tableTo": "deck",
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "deckslot_card_id_cards_id_fk": {
+          "name": "deckslot_card_id_cards_id_fk",
+          "tableFrom": "deckslot",
+          "tableTo": "cards",
+          "columnsFrom": [
+            "card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "deckslot_primarykey": {
+          "name": "deckslot_primarykey",
+          "columns": [
+            "deck_id",
+            "card_id",
+            "board"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
     },
     "public.user": {
       "name": "user",

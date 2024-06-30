@@ -1,5 +1,5 @@
 import { provide } from "inversify-binding-decorators";
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { ISupabaseClientContext } from "./supabase.client.context";
 

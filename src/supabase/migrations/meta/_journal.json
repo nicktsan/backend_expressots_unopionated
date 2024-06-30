@@ -26,8 +26,22 @@
     {
       "idx": 5,
       "version": "7",
-      "when": 1719348854797,
-      "tag": "0005_elite_thor",
+      "when": 1719419288492,
+      "tag": "0005_perfect_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1719609429651,
+      "tag": "0006_sour_callisto",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1719620202908,
+      "tag": "0007_fluffy_ikaris",
       "breakpoints": true
     }
   ]
