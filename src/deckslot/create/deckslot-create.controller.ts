@@ -21,7 +21,7 @@ export class DeckslotCreateController extends BaseController{
         // console.log(req.headers["userid"])
         // console.log("payload: ")
         // console.log(payload)
-        return this.callUseCase( //ask how to send the correct status code.
+        return this.callUseCase( //todo Currently sends status 201 if "Failed to create deckslot" error is thrown. How to fix?
             await this.deckslotCreateUsecase.execute(payload, req.headers["userid"] as string),
             res,
             StatusCode.Created,

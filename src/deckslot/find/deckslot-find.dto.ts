@@ -15,5 +15,6 @@ export interface IDeckslotFindResponseDto {
     deck_id: string;
     card_id: number;
     board: string;
-    message: string;
+    quantity?: number;
+    message?: string;
 }

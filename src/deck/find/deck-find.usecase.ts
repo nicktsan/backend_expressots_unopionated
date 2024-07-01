@@ -10,7 +10,7 @@ export class DeckFindUsecase {
         private report: Report,
     ) {}
     public async execute(payload: IDeckFindRequestDto, userId: string): Promise<IDeckFindResponseDto | AppError> {
-        const res: IDeckFindResponseDto | null = await this.deckRepository.findWithUserId(payload.id, userId);
+        const res: IDeckFindResponseDto | null = await this.deckRepository.findById(payload.id, userId);
         if (!res) {
             const error = this.report.error(
                 "This deck not found",

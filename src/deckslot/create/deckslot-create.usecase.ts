@@ -27,7 +27,7 @@ export class DeckslotCreateUsecase {
             }
 
             // check if deckslot is already in database.
-            const deckSlotExists: IDeckslotFindResponseDto | null = await this.deckSlotRepository.findDeckSlot(
+            const deckSlotExists: IDeckslotFindResponseDto | null = await this.deckSlotRepository.findOneDeckSlot(
                 payload as IDeckslotFindRequestDto);
             // If it is already in the database, increment quantity by +1 instead.
             if (deckSlotExists) {
