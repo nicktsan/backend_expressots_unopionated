@@ -1,5 +1,5 @@
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from "class-validator"
-export class IDeckslotUpdateQuantityRequestDto {
+export class IDeckslotDeleteRequestDto {
     @IsNotEmpty()
     @IsUUID()
     deck_id: string;
@@ -9,15 +9,12 @@ export class IDeckslotUpdateQuantityRequestDto {
     @IsOptional()
     @IsIn(['main', 'maybe'], { message: `board must be "main" or "maybe"` })
     board?: 'main' | 'maybe'
-    @IsNotEmpty()
-    @IsNumber()
-    changeValue: number
 }
 
-export interface IDeckslotUpdateQuantityResponseDto {
+export interface IDeckslotDeleteResponseDto {
     deck_id: string;
     card_id: number;
     board: string;
-    quantity: number;
-    message: string;
+    quantity?: number;
+    message?: string;
 }

@@ -60,7 +60,3 @@ export class DeckslotCreateUsecase {
         }
     }
 }
-function checkCreator(deckId: any, string: any, userId: string, string1: any) {
-    throw new Error("Function not implemented.");
-}
-

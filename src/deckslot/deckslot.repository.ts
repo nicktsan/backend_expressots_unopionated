@@ -8,6 +8,7 @@ import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { IDeckslotUpdateQuantityRequestDto, IDeckslotUpdateQuantityResponseDto } from "./update/quantity/deckslot-update-quantity.dto";
 import { IDeckslotFindRequestDto, IDeckslotFindResponseDto } from "./find/deckslot-find.dto";
 import { IDeckslotFindByDeckIdResponseDto } from "./find/bydeckid/deckslot-find-bydeckid.dto";
+import { IDeckslotDeleteRequestDto, IDeckslotDeleteResponseDto } from "./delete/deckslot-delete.dto";
 
 @provide(DeckSlotRepository)
 export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
@@ -108,6 +109,28 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
         }
     }
 
+    //Delete a deck slot by its primary composite key of deck_id, card_id, and board.
+    async deleteOneDeckSlot(payload: IDeckslotDeleteRequestDto): Promise<IDeckslotDeleteResponseDto | null> {
+        try {
+            const res = await this.db.delete(deckslotTable).where(
+                and(
+                    eq(deckslotTable.deck_id, payload.deck_id),
+                    eq(deckslotTable.card_id, payload.card_id),
+                    eq(deckslotTable.board, payload.board ?? "main")
+                )
+            ).returning({
+                deck_id: deckslotTable.deck_id,
+                card_id: deckslotTable.card_id,
+                board: deckslotTable.board,
+                message: sql`'Deckslot successfully deleted'`
+            })
+            return res[0] as IDeckslotDeleteResponseDto
+        } catch (error) {
+            console.log("error occured while deleting deckslot: ")
+            console.log(error)
+            return null
+        }
+    }
     //Find one deckslot by its composite primary key (deck_id, card_id, and board
     async findOneDeckSlot(payload: IDeckslotFindRequestDto): Promise<IDeckslotFindResponseDto | null> {
         try {
