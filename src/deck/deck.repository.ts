@@ -13,6 +13,27 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         super();
         this.table = deckTable;
     }
+    //Checks if the current authorized user is the creator of the deck. If the deck belongs to the user, the deck's
+    //creator_id should be the same as the user's id.
+    async checkCreator(deckId: string, userId: string): Promise<Record<string, string> | null> {
+        try {
+            const res = await this.db.select({
+                id: deckTable.id,
+                creator_id: deckTable.creator_id
+            }).from(deckTable).where(and(
+                eq(deckTable.id, deckId),
+                eq(deckTable.creator_id, userId)
+            ))
+            return res[0]
+        } catch (error) {
+            console.log("error occured while checking creator: ")
+            console.log(error)
+            return null
+        }
+    }
+
+    //This function selects a deck that is either public, unlisted, or is created by the user. If the user is just a guest,
+    //they will only be able to select a public or unlisted deck.
     async findWithUserId(id: string, userId: string): Promise<IDeckFindResponseDto | null> {
         try {
             // id: string;
@@ -39,6 +60,8 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
             .leftJoin(cards, eq(deckTable.banner, cards.id));
             
             let finalQuery;
+            //Requests with userIds are made by authorized users. Therefore, they should be able to find decks with
+            //visibility set to 'private' if they are the creator of those decks.
             if (userId) {
                 finalQuery = query.where(
                     and(
@@ -53,6 +76,8 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                     )
                 );
             } else {
+                //Else, the userId is empty, which means the request is made by a guest. Therefore, they are not allowed
+                //to find any decks that have their visibility set to 'private'.
                 finalQuery = query.where(
                     and(
                         eq(deckTable.id, id),
@@ -61,7 +86,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                 );
             }
             
-            const { sql: sqlString, params } = finalQuery.toSQL();
+            // const { sql: sqlString, params } = finalQuery.toSQL();
             // console.log('Parameters:', params);
             // console.log('SQL Query:', sqlString);
             const res = await finalQuery;

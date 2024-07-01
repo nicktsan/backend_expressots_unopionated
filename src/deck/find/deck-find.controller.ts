@@ -6,7 +6,7 @@ import { IDeckFindRequestDto } from "./deck-find.dto";
 import { Response, Request } from "express";
 import { getUserMiddleware } from "../../auth/supabase/auth-supabase.middleware";
 
-@controller("/deck/find") //todo test this route
+@controller("/deck/find")
 export class DeckFindController extends BaseController{
     constructor(private deckFindUsecase: DeckFindUsecase) {
         super();

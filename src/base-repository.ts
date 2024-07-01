@@ -6,7 +6,7 @@ import { provide } from "inversify-binding-decorators";
 import { IBaseRepository } from "./base-repository.interface";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { PgTableWithColumns } from "drizzle-orm/pg-core";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, SQL, sql, Table } from "drizzle-orm";
 
 @provide(BaseRepository)
 export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
@@ -28,34 +28,58 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
         }
     }
 
-    // async delete(id: string): Promise<boolean> {
-    //     try {
-    //         const res = await this.db.delete(this.table).where(
-    //             eq(this.table.id, id)).returning({ deletedId: this.table.id })
-    //         return res.length > 0
-    //     } catch (error) {
-    //         console.log("error occured while deleting: ")
-    //         console.log(error)
-    //         return false
-    //     }
-    // }
+    async delete(id: string): Promise<boolean> {
+        try {
+            const res = await this.db.delete(this.table).where(
+                eq(this.table.id, id)).returning({ deletedId: this.table.id })
+            return res.length > 0
+        } catch (error) {
+            console.log("error occured while deleting: ")
+            console.log(error)
+            return false
+        }
+    }
 
-    // async update(item: T): Promise<T | null> {
-    //     try {
-    //         const fields = Object.keys(item)
-    //             .map((key, index) => `${key} = $${index + 1}`)
-    //             .join(", ");
-    //         const values = Object.values(item);
-    //         const res: QueryResult = await client.query(
-    //             `UPDATE ${this.table} SET ${fields} WHERE id = $${values.length} RETURNING ${fields}`,
-    //             values,
-    //         );
-    //         return res.rows[0] as T;
-    //     } catch {
-    //         console.log("error occured while updating: ")
-    //         return null;
-    //     }
-    // }
+    //Example of how to call this method:
+    // const updatePostResult = await dynamicUpdate(
+    //     userTable,
+    //     { title: 'New Title', content: 'Updated content' },
+    //     { id: 1, authorId: 5 }
+    // );
+    async update<TA extends Table>(
+        table: TA,
+        updateFields: Partial<TA['$inferInsert']>,
+        whereConditions: Partial<TA['$inferInsert']>): Promise<T[] | null> {
+        try {
+            // Prepare the set clause
+            const setClause: Partial<TA['$inferInsert']> = {};
+            for (const [key, value] of Object.entries(updateFields)) {
+                if (value !== undefined) {
+                setClause[key as keyof TA['$inferInsert']] = value;
+                }
+            }
+
+            // Prepare the where clause
+            const whereClause: SQL[] = [];
+            for (const [key, value] of Object.entries(whereConditions)) {
+                if (value !== undefined) {
+                whereClause.push(eq(this.table[key as keyof T], value));
+                }
+            }
+
+            // Execute the update query
+            const result = await this.db
+                .update(table)
+                .set(setClause)
+                .where(and(...whereClause))
+                .returning({id: this.table.id})
+
+            return result as T[];
+        } catch {
+            console.log("error occured while updating: ")
+            return null;
+        }
+    }
 
     async find(id: string): Promise<T | null> {
         try {
