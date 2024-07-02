@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsUUID } from "class-validator";
-import { DeckEntity } from "../deck.entity";
 export class IDeckFindRequestDto {
     @IsUUID(4)
     @IsNotEmpty()

@@ -1,11 +1,12 @@
 import "reflect-metadata";
 import { provide } from "inversify-binding-decorators";
-import { SQL, asc, desc, eq, and, or, inArray } from "drizzle-orm";
+import { SQL, asc, desc, eq, and, or, inArray, Table } from "drizzle-orm";
 import {DeckEntity} from "./deck.entity"
 import { BaseRepository } from "../base-repository";
 import { deckTable, userTable, cards } from "../supabase/migrations/schema";
 import { IDeckFindRequestMineDto } from "./find/mine/deck-find-mine.dto";
 import { IDeckFindResponseDto } from "./find/deck-find.dto";
+import { IDeckUpdateRequestDto } from "./update/deck-update.dto";
 
 @provide(DeckRepository)
 export class DeckRepository extends BaseRepository<DeckEntity>{
@@ -36,16 +37,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
     //If the user is just a guest, they will only be able to select a public or unlisted deck.
     async findById(id: string, userId: string): Promise<IDeckFindResponseDto | null> {
         try {
-            // id: string;
-            // name?: string;
-            // creator_id?: string;
-            // folder_id?: string | null;
-            // banner?: string | null;
-            // description?: string | null;
-            // views?: number;
-            // visibility?: string;
-            // created_at?: Date | null;
-            // updated_at?: Date | null;
+
             const query = this.db.select({
                 id: deckTable.id,
                 name: deckTable.name,

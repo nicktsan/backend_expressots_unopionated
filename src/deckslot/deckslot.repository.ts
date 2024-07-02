@@ -21,22 +21,6 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
     //they may see deckslots belonging to private decks that belong to the authorized user.
     //If the user is not signed in, then they can only see public and unlisted deckslots.
     async findByDeckId(deckId: string, userId: string): Promise<IDeckslotFindByDeckIdResponseDto | null> {
-        // id: integer("id").primaryKey().notNull(),
-        // name_kr: text("name_kr"),
-        // name_eng: text("name_eng"),
-        // code: text("code").notNull(),
-        // rarity: text("rarity"),
-        // rarity_abb: text("rarity_abb"),
-        // card_type: text("card_type"),
-        // color: text("color"),
-        // color_sub: text("color_sub"),
-        // card_level: smallint("card_level"),
-        // plain_text_eng: text("plain_text_eng"),
-        // plain_text: text("plain_text"),
-        // expansion: text("expansion"),
-        // illustrator: text("illustrator"),
-        // link: text("link"),
-        // image_link: text("image_link"),
         try {
             const query = this.db.select({
                 deck_id: deckslotTable.deck_id,

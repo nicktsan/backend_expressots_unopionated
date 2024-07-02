@@ -46,38 +46,42 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
     //     { title: 'New Title', content: 'Updated content' },
     //     { id: 1, authorId: 5 }
     // );
-    async update<TA extends Table>(
-        table: TA,
-        updateFields: Partial<TA['$inferInsert']>,
-        whereConditions: Partial<TA['$inferInsert']>): Promise<T[] | null> {
+    async update(item: T, hasUpdateAt: boolean): Promise<T | null> {
         try {
-            // Prepare the set clause
-            const setClause: Partial<TA['$inferInsert']> = {};
-            for (const [key, value] of Object.entries(updateFields)) {
-                if (value !== undefined) {
-                setClause[key as keyof TA['$inferInsert']] = value;
+            const { id, ...itemWithoutId } = item
+
+            // Start building the query
+            const queryParts: string[] = [];
+            // Dynamically add each field to the query
+            for (const [key, value] of Object.entries(itemWithoutId)) {
+                if (value !== undefined && key !== 'id') {
+                    queryParts.push(`${key} = '${value}'`);
                 }
             }
-
-            // Prepare the where clause
-            const whereClause: SQL[] = [];
-            for (const [key, value] of Object.entries(whereConditions)) {
-                if (value !== undefined) {
-                whereClause.push(eq(this.table[key as keyof T], value));
-                }
+            //We can't explicitly check if the table has the updated_at column, so we rely on the function argument 'hasUpdateAt' instead.
+            if (hasUpdateAt) {
+                queryParts.push(`updated_at = NOW()`);
             }
+            // console.log(queryParts)
 
-            // Execute the update query
-            const result = await this.db
-                .update(table)
-                .set(setClause)
-                .where(and(...whereClause))
-                .returning({id: this.table.id})
+            // Combine all updates
+            const setClause = queryParts.join(', ');
 
-            return result as T[];
-        } catch {
+            // Build the full query
+            const query = sql`
+                UPDATE ${this.table}
+                SET ${sql.raw(setClause)}
+                WHERE id = ${id}
+                RETURNING *
+            `;
+            const finalQuery = this.db.execute(query)
+            // console.log(finalQuery)
+            const res = await finalQuery
+            return res.rows[0] as T;
+        } catch (error) {
             console.log("error occured while updating: ")
-            return null;
+            console.log(error)
+            return null
         }
     }
 
@@ -96,7 +100,6 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
             const fields = Object.keys(item)
                 .map((key, index) => `${key} = $${index + 1}`)
                 .join(", ");
-            // const res = await this.db.select().from(this.table);
             
             const res = await this.db.execute(sql`select ${fields} from ${this.table}`);
             return res as T[];

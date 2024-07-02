@@ -2,6 +2,7 @@ import { IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validat
 export class IDeckCreateRequestDto {
 	@IsNotEmpty()
 	@MinLength(3)
+	@IsString()
 	name: string;
 
 	@IsOptional()
