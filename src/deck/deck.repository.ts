@@ -1,12 +1,11 @@
 import "reflect-metadata";
 import { provide } from "inversify-binding-decorators";
-import { SQL, asc, desc, eq, and, or, inArray, Table } from "drizzle-orm";
+import { SQL, asc, desc, eq, and, or, inArray, sql } from "drizzle-orm";
 import {DeckEntity} from "./deck.entity"
 import { BaseRepository } from "../base-repository";
 import { deckTable, userTable, cards } from "../supabase/migrations/schema";
 import { IDeckFindRequestMineDto } from "./find/mine/deck-find-mine.dto";
 import { IDeckFindResponseDto } from "./find/deck-find.dto";
-import { IDeckUpdateRequestDto } from "./update/deck-update.dto";
 
 @provide(DeckRepository)
 export class DeckRepository extends BaseRepository<DeckEntity>{
@@ -14,6 +13,20 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         super();
         this.table = deckTable;
     }
+    async incrementDeckView(deckId: string): Promise<DeckEntity | null> {
+        try {
+            const res = await this.db.update(deckTable)
+                .set({ views: sql`views + 1` })
+                .where(eq(deckTable.id, deckId))
+                .returning();
+            return res[0];
+        } catch (error) {
+            console.log("error occured while incrementing deck view: ")
+            console.log(error)
+            return null
+        }
+    }
+
     //Checks if the current authorized user is the creator of the deck. If the deck belongs to the user, the deck's
     //creator_id should be the same as the user's id.
     async checkCreator(deckId: string, userId: string): Promise<Record<string, string> | null> {

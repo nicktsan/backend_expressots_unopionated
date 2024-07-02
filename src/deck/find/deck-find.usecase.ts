@@ -19,6 +19,8 @@ export class DeckFindUsecase {
             );
             throw error;
         }
+        //increment the deck view by 1 after fetching all deck slots belonging to the deck.
+        await this.deckRepository.incrementDeckView(payload.id)
         // console.log("res in deck-find.usecase(execute): ")
         // console.log(res)
         return res
