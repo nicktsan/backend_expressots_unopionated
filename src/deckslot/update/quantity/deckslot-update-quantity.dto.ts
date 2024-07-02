@@ -8,7 +8,7 @@ export class IDeckslotUpdateQuantityRequestDto {
     card_id: number;
     @IsOptional()
     @IsIn(['main', 'maybe'], { message: `board must be "main" or "maybe"` })
-    board?: 'main' | 'maybe'
+    board?: string
     @IsNotEmpty()
     @IsNumber()
     changeValue: number

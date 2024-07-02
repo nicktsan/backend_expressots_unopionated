@@ -31,8 +31,14 @@ export class DeckslotCreateUsecase {
                 payload as IDeckslotFindRequestDto);
             // If it is already in the database, increment quantity by +1 instead.
             if (deckSlotExists) {
+                const updateRequest: IDeckslotUpdateQuantityRequestDto = {
+                    deck_id: payload.deck_id,
+                    card_id: payload.card_id,
+                    board: payload.board ?? "main",
+                    changeValue: 1
+                }
                 const updateRes: IDeckslotUpdateQuantityResponseDto | null = await this.deckSlotRepository
-                .updateQuantity(payload as IDeckslotUpdateQuantityRequestDto, 1)
+                .updateQuantity(updateRequest)
                 if (!updateRes) {
                     const error = this.report.error(
                         "Failed to update quantity.",

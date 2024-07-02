@@ -8,7 +8,7 @@ export class IDeckslotCreateRequestDto {
     card_id: number;
     @IsOptional()
     @IsIn(['main', 'maybe'], { message: `board must be "main" or "maybe"` })
-    board?: 'main' | 'maybe' | undefined | null
+    board?: string
 }
 
 export interface IDeckslotCreateResponseDto {

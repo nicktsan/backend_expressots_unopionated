@@ -4,7 +4,7 @@ import { DeckslotFindBydeckidUsecase } from "./deckslot-find-bydeckid.usecase";
 import cookieParser from "cookie-parser";
 import { IDeckslotFindByDeckIdRequestDto } from "./deckslot-find-bydeckid.dto";
 import { Response, Request } from "express";
-import { AuthSupabaseMiddleware, getUserMiddleware } from "../../../auth/supabase/auth-supabase.middleware";
+import { getUserMiddleware } from "../../../auth/supabase/auth-supabase.middleware";
 
 @controller("/deckslot/find/bydeckid")
 export class DeckslotFindBydeckidController extends BaseController{

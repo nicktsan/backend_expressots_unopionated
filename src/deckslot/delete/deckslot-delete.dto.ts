@@ -8,7 +8,7 @@ export class IDeckslotDeleteRequestDto {
     card_id: number;
     @IsOptional()
     @IsIn(['main', 'maybe'], { message: `board must be "main" or "maybe"` })
-    board?: 'main' | 'maybe'
+    board?: string
 }
 
 export interface IDeckslotDeleteResponseDto {

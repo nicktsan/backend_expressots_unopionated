@@ -156,10 +156,11 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
         }
     }
     //Update the quantity of a deck slot. For example, if changeValue is n, then set quantity as `quantity + n`
-    async updateQuantity(payload: IDeckslotUpdateQuantityRequestDto, changeValue: number): Promise<IDeckslotUpdateQuantityResponseDto | null> {
+    async updateQuantity(payload: IDeckslotUpdateQuantityRequestDto): Promise<IDeckslotUpdateQuantityResponseDto | null> {
         try {
             const resp = await this.db.update(deckslotTable).set({
-                quantity: sql`${deckslotTable.quantity} + ${changeValue}`
+                quantity: sql`${deckslotTable.quantity} + ${payload.changeValue}`,
+                updated_at: sql`now()`
             }).where(
                 and(
                     eq(deckslotTable.deck_id, payload.deck_id),
