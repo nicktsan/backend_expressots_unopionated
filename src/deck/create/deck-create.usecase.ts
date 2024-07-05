@@ -40,7 +40,7 @@ export class DeckCreateUsecase {
             //         "create-user-usecase",
             //     );
 
-            //     return error;
+            //     throw error;
             // }
 
             const res: DeckEntity | null = await this.deckRepository.create(this.newDeck);

@@ -5,8 +5,10 @@ import {
     Middleware,
     ProviderManager,
 } from "@expressots/core";
-import { container } from "./app.container";
+import { ENV } from "./env"
+import { appContainer, container } from "./app.container";
 import { DrizzleProvider } from "./db/drizzle/drizzle.provider";
+import cors from "cors";
 
 export class App extends AppExpress {
     private middleware: IMiddleware;
@@ -20,6 +22,8 @@ export class App extends AppExpress {
 
     protected configureServices(): void | Promise<void> {
         this.provider.register(Env);
+        // this.middleware.addMiddleware({ path: "some regex that excludes src/auth/supabase/confirmSignup, maybe something like this ^\/(?!signup).*$", middlewares:[cors({ origin: ENV.CORS.FRONTEND_ORIGIN })] }); //path can use regex to situationally apply global middleware
+        // this.middleware.addMiddleware({ path: "some regex that only includes src/auth/supabase/confirmSignup", middlewares:[cors({ origin: "*" })] }); //path can use regex to situationally apply global middleware
 
         this.middleware.addBodyParser();
         this.middleware.setErrorHandler();
@@ -30,9 +34,10 @@ export class App extends AppExpress {
             this.provider.get(Env).checkAll();
         }
         // container.get(DrizzleProvider).Drizzle; //fix
+        appContainer.viewContainerBindings();
     }
 
     protected serverShutdown(): void | Promise<void> {
-        container.get(DrizzleProvider).closePool;
+        container.get(DrizzleProvider).closePool; //Todo request serverShutdown actions to happen on reset
     }
 }

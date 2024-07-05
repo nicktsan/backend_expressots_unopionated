@@ -21,7 +21,7 @@ export class DeckUpdateUsecase {
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                return error;
+                throw error;
             }
             const res: DeckEntity | null = await this.deckRepository.update(payload, true)
             if (!res) {
@@ -30,7 +30,7 @@ export class DeckUpdateUsecase {
                     StatusCode.NotFound,
                     "Failed to update deck.",
                 );
-                return error;
+                throw error;
             }
             return {
                 deckEntity: res,

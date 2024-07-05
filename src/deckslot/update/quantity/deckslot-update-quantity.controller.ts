@@ -21,7 +21,7 @@ export class DeckslotUpdateQuantityController extends BaseController{
         // console.log(req.headers["userid"])
         // console.log("payload: ")
         // console.log(payload)
-        return this.callUseCase( //todo ask how to send the correct status code when error occurs.
+        return this.callUseCase(
             await this.deckslotUpdateQuantityUsecase.execute(payload, req.headers["userid"] as string),
             res,
             StatusCode.OK,

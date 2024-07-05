@@ -1,5 +1,5 @@
 import { Post, body, controller, request, response } from "@expressots/adapter-express";
-import { BaseController, StatusCode, ValidateDTO } from "@expressots/core";
+import { BaseController, StatusCode, ValidateDTO, AppError } from "@expressots/core";
 import { DeckslotCreateUsecase } from "./deckslot-create.usecase";
 import cookieParser from "cookie-parser";
 import { IDeckslotCreateRequestDto } from "./deckslot-create.dto";
@@ -21,7 +21,7 @@ export class DeckslotCreateController extends BaseController{
         // console.log(req.headers["userid"])
         // console.log("payload: ")
         // console.log(payload)
-        return this.callUseCase( //todo Currently sends status 201 if "Failed to create deckslot" error is thrown. How to fix?
+        return this.callUseCase(
             await this.deckslotCreateUsecase.execute(payload, req.headers["userid"] as string),
             res,
             StatusCode.Created,

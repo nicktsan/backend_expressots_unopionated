@@ -4,5 +4,6 @@ import { DeckCreateController } from "./create/deck-create.controller";
 import { DeckFindMineController } from "./find/mine/deck-find-mine.controller";
 import { DeckFindController } from "./find/deck-find.controller";
 import { DeckUpdateController } from "./update/deck-update.controller";
+import { DeckDeleteController } from "./delete/deck-delete.controller";
 
-export const DeckModule: ContainerModule = CreateModule([DeckCreateController, DeckFindController, DeckFindMineController, DeckUpdateController]);
+export const DeckModule: ContainerModule = CreateModule([DeckCreateController, DeckFindController, DeckFindMineController, DeckUpdateController, DeckDeleteController]);

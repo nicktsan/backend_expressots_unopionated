@@ -23,7 +23,7 @@ export class DeckslotCreateUsecase {
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                return error;
+                throw error;
             }
 
             // check if deckslot is already in database.
@@ -45,7 +45,7 @@ export class DeckslotCreateUsecase {
                         StatusCode.BadRequest,
                         "Failed to update quantity.",
                     );
-                    return error;
+                    throw error;
                 }
                 return updateRes;
             }
@@ -57,7 +57,7 @@ export class DeckslotCreateUsecase {
                     StatusCode.BadRequest,
                     "Failed to create deckslot.",
                 );
-                return error;
+                throw error;
             }
             return res;
         } catch (error: any) {
