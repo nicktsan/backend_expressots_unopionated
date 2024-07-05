@@ -4,7 +4,7 @@ import { SQL, asc, desc, eq, and, or, inArray, sql } from "drizzle-orm";
 import {DeckEntity} from "./deck.entity"
 import { BaseRepository } from "../base-repository";
 import { deckTable, userTable, cards } from "../supabase/migrations/schema";
-import { IDeckFindRequestMineDto } from "./find/mine/deck-find-mine.dto";
+import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
 import { IDeckFindResponseDto } from "./find/deck-find.dto";
 
 @provide(DeckRepository)
@@ -128,19 +128,39 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
     //Used in to display all decks created by a particular creator.
     //todo update this so that if someone is looking for decks created by a different creator, they can only find them
     //if the decks are public.
-    async findByCreatorId(payload: IDeckFindRequestMineDto, userId: string): Promise<DeckEntity[] | null>{
+    async findByCreatorId(payload: IDeckFindRequestByCreatorIdDto, userId: string): Promise<DeckEntity[] | null>{
         try {
             const query = this.db.select({
                 id: deckTable.id,
                 name: deckTable.name,
                 updated_at: deckTable.updated_at,
-            }).from(deckTable).where(eq(deckTable.creator_id, userId));
+            }).from(deckTable);
+
+            let whereQuery;
+            //If the userId matches the payload's idea, grab all decks belonging to the user
+            if (userId === payload.creator_id) {
+                whereQuery = query.where(eq(deckTable.creator_id, payload.creator_id));
+            } else {
+                //Else, only grab public and unlisted decks that have the creator_id.
+                whereQuery = query.where(
+                    and(
+                        eq(deckTable.creator_id, payload.creator_id),
+                        inArray(deckTable.visibility, ['public', 'unlisted'])
+                    )
+                );
+            }
+
             const orderByClause: SQL[] = []
             let nameOrderExpression: SQL = desc(deckTable.name);
-            if (payload.nameOrderDirection && payload.nameOrderDirection === "asc") {
-                nameOrderExpression = asc(deckTable.name)
+            if (payload.nameOrderDirection) {
+                if(payload.nameOrderDirection === "asc") {
+                    nameOrderExpression = asc(deckTable.name)
+                }
+                if(payload.nameOrderDirection === "desc") {
+                    nameOrderExpression = desc(deckTable.name)
+                }
+                orderByClause.push(nameOrderExpression);
             }
-            orderByClause.push(nameOrderExpression);
             let updatedAtOrderExpression: SQL;
             if (payload.updatedAtOrderDirection) {
                 if (payload.updatedAtOrderDirection === "asc") {
@@ -151,7 +171,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                 }
                 orderByClause.push(updatedAtOrderExpression);
             }
-            const finalQuery = query.orderBy(...orderByClause);
+            const finalQuery = whereQuery.orderBy(...orderByClause);
             const res = await finalQuery;
             return res as DeckEntity[];
         } catch {

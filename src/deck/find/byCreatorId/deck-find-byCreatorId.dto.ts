@@ -1,6 +1,9 @@
-import { IsIn, IsOptional } from "class-validator"
+import { IsIn, IsNotEmpty, IsOptional, IsUUID } from "class-validator"
 import { DeckEntity } from "../../deck.entity";
-export class IDeckFindRequestMineDto {
+export class IDeckFindRequestByCreatorIdDto {
+	@IsNotEmpty()
+	@IsUUID()
+	creator_id: string;
 	@IsOptional()
 	@IsIn(['asc', 'desc'], { message: 'orderByName must be either asc or desc' })
 	nameOrderDirection?: 'asc' | 'desc';
@@ -9,7 +12,7 @@ export class IDeckFindRequestMineDto {
 	updatedAtOrderDirection?: 'asc' | 'desc';
 }
 
-export interface IDeckFindResponseMineDto {
+export interface IDeckFindResponseByCreatorIdDto {
 	decks: DeckEntity[] | null;
 	message: string;
 }

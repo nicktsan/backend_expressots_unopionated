@@ -1,16 +1,16 @@
 import { provide } from "inversify-binding-decorators";
-import { IDeckFindRequestMineDto, IDeckFindResponseMineDto } from "./deck-find-mine.dto";
+import { IDeckFindRequestByCreatorIdDto, IDeckFindResponseByCreatorIdDto } from "./deck-find-byCreatorId.dto";
 import { DeckRepository } from "../../deck.repository";
 import { DeckEntity } from "../../deck.entity";
 import { AppError, Report, StatusCode } from "@expressots/core";
 
-@provide(DeckFindMineUsecase)
-export class DeckFindMineUsecase {
+@provide(DeckFindByCreatorIdUsecase)
+export class DeckFindByCreatorIdUsecase {
     constructor(
         private deckRepository: DeckRepository,
         private report: Report,
     ) {}
-    public async execute(payload: IDeckFindRequestMineDto, userId: string): Promise<IDeckFindResponseMineDto | AppError> {
+    public async execute(payload: IDeckFindRequestByCreatorIdDto, userId: string): Promise<IDeckFindResponseByCreatorIdDto | AppError> {
         // id: uuid("id").primaryKey().notNull(),
         // name: text("name").unique().notNull(),
         // creator_id: uuid("creator_id").notNull().references(() => userTable.id, {onDelete: 'cascade'}),
