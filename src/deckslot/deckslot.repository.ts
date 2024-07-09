@@ -28,12 +28,14 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
                 board: deckslotTable.board,
                 quantity: deckslotTable.quantity,
                 name_eng: cards.name_eng,
+                name_kr: cards.name_kr,
                 code: cards.code,
                 rarity: cards.rarity,
                 card_type: cards.card_type,
                 color: cards.color,
                 card_level: cards.card_level,
                 plain_text_eng: cards.plain_text_eng,
+                plain_text: cards.plain_text,
                 expansion: cards.expansion,
                 illustrator: cards.illustrator,
                 image_link: cards.image_link
@@ -115,7 +117,7 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
             return null
         }
     }
-    //Find one deckslot by its composite primary key (deck_id, card_id, and board
+    //Find one deckslot by its composite primary key (deck_id, card_id, and board)
     async findOneDeckSlot(payload: IDeckslotFindRequestDto): Promise<IDeckslotFindResponseDto | null> {
         try {
             const res = await this.db.select(

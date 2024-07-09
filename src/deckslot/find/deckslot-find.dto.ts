@@ -17,4 +17,16 @@ export interface IDeckslotFindResponseDto {
     board: string;
     quantity?: number;
     message?: string;
+    name_eng?: string;
+    name_kr?: string;
+    code?: string;
+    rarity?: string;
+    card_type?: string;
+    color?: string;
+    card_level?: number | null;
+    plain_text_eng?: string;
+    plain_text?: string;
+    expansion?: string | null;
+    illustrator?: string;
+    image_link?: string;
 }

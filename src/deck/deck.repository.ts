@@ -126,8 +126,6 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
     // @IsIn(['asc', 'desc'], { message: 'orderByUpdatedAt must be either asc or desc' })
     // updatedAtOrderDirection?: 'asc' | 'desc';
     //Used in to display all decks created by a particular creator.
-    //todo update this so that if someone is looking for decks created by a different creator, they can only find them
-    //if the decks are public.
     async findByCreatorId(payload: IDeckFindRequestByCreatorIdDto, userId: string): Promise<DeckEntity[] | null>{
         try {
             const query = this.db.select({
