@@ -42,6 +42,14 @@ export class DeckFindByCreatorIdUsecase {
                 );
                 throw error;
             }
+            if (res.length < 1) {
+                const error = this.report.error(
+                    "User has no public decks",
+                    StatusCode.NotFound,
+                    "deck-find-mine.usecase",
+                );
+                throw error;
+            }
             return {
                 decks: res,
                 message: "User's decks found successfully."

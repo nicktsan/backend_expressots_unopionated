@@ -27,7 +27,7 @@ export class UserRepository extends BaseRepository<UserEntity> {
         }
     }
 
-    async findByEmail(email: string, password_hash: string): Promise<UserEntity | null> {
+    async findByEmail(email: string): Promise<UserEntity | null> {
 
         try {
             const res = await this.db.select({

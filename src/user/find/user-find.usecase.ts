@@ -1,9 +1,9 @@
-import { Report, StatusCode, provideSingleton } from "@expressots/core";
+import { Report, StatusCode } from "@expressots/core";
 import { UserRepository } from "./../user.repository";
 import { provide } from "inversify-binding-decorators";
-import { UserFindRequestDTO, UserFindResponseDTO } from "./user-find.dto";
+import { UserFindResponseDTO } from "./user-find.dto";
 
-@provideSingleton(UserFindUseCase)
+@provide(UserFindUseCase)
 export class UserFindUseCase {
     constructor(
         private userRepository: UserRepository,
@@ -12,13 +12,8 @@ export class UserFindUseCase {
 
     async execute(
         email: string,
-        password_hash: string,
-        // payload: UserFindRequestDTO,
     ): Promise<UserFindResponseDTO | null> {
-        // console.log(payload)
-        // console.log("email and password_hash from UserFindUseCase:")
-        // console.log(email, password_hash)
-        const userExists = await this.userRepository.findByEmail(email, password_hash);
+        const userExists = await this.userRepository.findByEmail(email);
 
         if (!userExists) {
             const error = this.report.error(

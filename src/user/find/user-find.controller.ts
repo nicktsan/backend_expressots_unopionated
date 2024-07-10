@@ -1,9 +1,8 @@
 import { BaseController, StatusCode } from "@expressots/core";
 import { Response } from "express";
-import { UserFindRequestDTO, UserFindResponseDTO } from "./user-find.dto";
+import { UserFindResponseDTO } from "./user-find.dto";
 import { UserFindUseCase } from "./user-find.usecase";
 import { Get, controller, response, headers } from "@expressots/adapter-express";
-import { inject } from "inversify";
 
 @controller("/user/find")
 export class UserFindController extends BaseController {
@@ -13,13 +12,11 @@ export class UserFindController extends BaseController {
 
     @Get("")
     async execute(
-        // @param() payload: UserFindRequestDTO,
         @headers('email') email: string,
-        @headers('password_hash') password_hash: string,
         @response() res: Response,
     ): Promise<UserFindResponseDTO> {
         return this.callUseCase(
-            await this.userFindUseCase.execute(email, password_hash),
+            await this.userFindUseCase.execute(email),
             res,
             StatusCode.OK,
         );
