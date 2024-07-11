@@ -18,7 +18,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
             const res = await this.db.update(deckTable)
                 .set({ views: sql`views + 1` })
                 .where(eq(deckTable.id, deckId))
-                .returning();
+                .returning({ id: deckTable.id, views: deckTable.views });
             return res[0];
         } catch (error) {
             console.log("error occured while incrementing deck view: ")

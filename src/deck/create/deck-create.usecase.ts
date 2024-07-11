@@ -44,6 +44,14 @@ export class DeckCreateUsecase {
             // }
 
             const res: DeckEntity | null = await this.deckRepository.create(this.newDeck);
+            if (!res) {
+                const error = this.report.error(
+                    "Failed to create deck.",
+                    StatusCode.BadRequest,
+                    "Failed to create deck.",
+                );
+                throw error;
+            }
             return {
                 id: res!.id,
                 message: "Deck created successfully"

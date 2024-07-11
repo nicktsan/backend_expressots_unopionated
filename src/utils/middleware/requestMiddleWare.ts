@@ -4,7 +4,7 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 import { StatusCode, Logger } from "@expressots/core";
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-export function ValidateReqQueryDTO<T extends object>(type: new () => T): RequestHandler {
+export function ValidateReqQueryDTO<T extends object>(type: new () => T): RequestHandler {//todo ask why there is no request query dto validation
     return async (req: Request, res: Response, next: NextFunction) => {
       const logger: Logger = new Logger();
   
