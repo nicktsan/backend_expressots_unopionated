@@ -73,10 +73,11 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                         eq(deckTable.id, id),
                         or(
                             inArray(deckTable.visibility, ['public', 'unlisted']),
-                            and(
-                                eq(deckTable.visibility, 'private'),
-                                eq(deckTable.creator_id, userId ?? "")
-                            )
+                            eq(deckTable.creator_id, userId ?? "")
+                            // and(
+                            //     eq(deckTable.visibility, 'private'),
+                            //     eq(deckTable.creator_id, userId ?? "")
+                            // )
                         )
                     )
                 );
@@ -143,7 +144,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                 whereQuery = query.where(
                     and(
                         eq(deckTable.creator_id, payload.creator_id),
-                        inArray(deckTable.visibility, ['public', 'unlisted'])
+                        eq(deckTable.visibility, 'public')
                     )
                 );
             }

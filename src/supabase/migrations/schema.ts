@@ -1,5 +1,5 @@
-import { relations } from "drizzle-orm";
-import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema, serial, AnyPgColumn, foreignKey, primaryKey } from "drizzle-orm/pg-core"
+import { relations, sql } from "drizzle-orm";
+import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema, serial, AnyPgColumn, foreignKey, primaryKey, uniqueIndex } from "drizzle-orm/pg-core"
 //   import { sql } from "drizzle-orm"
 // import { create } from "node:domain"
 
@@ -45,8 +45,8 @@ export const userTable = pgTable("user", {
 	id: uuid("id").primaryKey().notNull(),
 	username: text("username").unique().notNull(),
 	email: text("email").unique().notNull(),
-	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 },
 (table) => {
 	return {
@@ -73,17 +73,19 @@ export const deckTable = pgTable("deck", {
 	description: text("description"),
 	views: integer("views").notNull().default(0),
 	visibility: text("visibility").notNull().default("public"),
-	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-});
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+	nameIndex: uniqueIndex('unique_name_case_insensitive').on(sql`lower(${table.name})`),
+}));
 
 export const deckslotTable = pgTable ("deckslot", {
 	deck_id: uuid("deck_id").notNull().references(() => deckTable.id, {onDelete: 'cascade'}),
 	card_id: integer("card_id").notNull().references(() => cards.id, {onDelete: 'cascade'}),
 	quantity: integer("quantity").notNull().default(1),
 	board: text("board").notNull().default("main"),
-	created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+	created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => {
 	return {
 		pk: primaryKey({ name: 'deckslot_primarykey', columns: [table.deck_id, table.card_id, table.board] }),

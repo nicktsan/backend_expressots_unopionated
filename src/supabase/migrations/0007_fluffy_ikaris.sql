@@ -5,3 +5,6 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+
+
+ALTER TABLE deck ADD CONSTRAINT min_deck_name_length CHECK (LENGTH(COALESCE(name, '')) >= 3);
