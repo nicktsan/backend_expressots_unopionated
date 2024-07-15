@@ -24,16 +24,24 @@ export class CardRepository extends BaseRepository<CardEntity>{
         
         // Create a type-safe list of allowed columns
         const allowedColumns: (keyof typeof cards)[] = [
-            'id', 'name_eng_lower', 'name_kr', 'code', 'rarity', 'card_type', 'color',
+            /*'id', */'name_eng', 'name_kr', 'code', 'rarity', 'card_type', 'color',
             'card_level', 'plain_text_eng', 'plain_text', 'expansion', 'illustrator'
         ];
         
         // Dynamic column selection with type-safe check
         const columns = payload.select && payload.select.length > 0
-            ? payload.select
-                .filter((col): col is keyof typeof cards => allowedColumns.includes(col as keyof typeof cards))
-                .map(col => sql.identifier(col as string))
+            ? [
+                sql.identifier('id'),
+                ...payload.select
+                    .filter((col): col is keyof typeof cards =>
+                        /*col !== 'id' && */allowedColumns.includes(col as keyof typeof cards))
+                    .map(col => sql.identifier(col as string))
+            ]
             : [sql.raw('*')];
+        // ? payload.select
+            //     .filter((col): col is keyof typeof cards => allowedColumns.includes(col as keyof typeof cards))
+            //     .map(col => sql.identifier(col as string))
+            // : [sql.raw('*')];
         
         // Build WHERE conditions
         if (payload.name && typeof payload.name === 'string') {
@@ -88,6 +96,7 @@ export class CardRepository extends BaseRepository<CardEntity>{
             SELECT ${sql.join(columns, sql`, `)}
             FROM ${cards}
             ${whereClause}
+            ORDER BY ${cards.name_eng_lower} ASC
         `;
     }
 
