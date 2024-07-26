@@ -47,11 +47,14 @@ export const userTable = pgTable("user", {
 	email: text("email").unique().notNull(),
 	created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+	username_lower: text("name_lower"),
 },
 (table) => {
 	return {
 		username_unique: unique("username_unique").on(table.username),
 		email_unique: unique("email_unique").on(table.email),
+		usernameIndex: uniqueIndex('unique_username_case_insensitive').on(sql`lower(${table.username})`),
+		trgm_idx_username: index("trgm_idx_username").using("gin", table.username_lower),
 	}
 });
 
