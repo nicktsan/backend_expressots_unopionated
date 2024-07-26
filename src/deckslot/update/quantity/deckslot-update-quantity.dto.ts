@@ -1,4 +1,4 @@
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from "class-validator"
+import { IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsUUID } from "class-validator"
 export class IDeckslotUpdateQuantityRequestDto {
     @IsNotEmpty()
     @IsUUID()
@@ -11,13 +11,14 @@ export class IDeckslotUpdateQuantityRequestDto {
     board?: string
     @IsNotEmpty()
     @IsNumber()
+    @IsInt()
     changeValue: number
 }
 
 export interface IDeckslotUpdateQuantityResponseDto {
     deck_id: string;
     card_id: number;
-    board: string;
+    board: 'main' | 'maybe';
     quantity: number;
     message: string;
 }

@@ -75,8 +75,11 @@ export const deckTable = pgTable("deck", {
 	visibility: text("visibility").notNull().default("public"),
 	created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+	name_lower: text("name_lower"),
 }, (table) => ({
 	nameIndex: uniqueIndex('unique_name_case_insensitive').on(sql`lower(${table.name})`),
+	trgm_idx_deck_name: index("trgm_idx_deck_name").using("gin", table.name_lower),
+	deck_name_unique: unique("deck_name_unique").on(table.name),
 }));
 
 export const deckslotTable = pgTable ("deckslot", {

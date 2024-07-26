@@ -22,6 +22,7 @@ export class App extends AppExpress {
 
     protected configureServices(): void | Promise<void> {
         this.provider.register(Env);
+        // this.setEngine(Engine.HBS);
         // this.middleware.addMiddleware({ path: "some regex that excludes src/auth/supabase/confirmSignup, maybe something like this ^\/(?!signup).*$", middlewares:[cors({ origin: ENV.CORS.FRONTEND_ORIGIN })] }); //path can use regex to situationally apply global middleware
         // this.middleware.addMiddleware({ path: "some regex that only includes src/auth/supabase/confirmSignup", middlewares:[cors({ origin: "*" })] }); //path can use regex to situationally apply global middleware
 
@@ -38,6 +39,6 @@ export class App extends AppExpress {
     }
 
     protected serverShutdown(): void | Promise<void> {
-        container.get(DrizzleProvider).closePool; //Todo request serverShutdown actions to happen on reset
+        container.get(DrizzleProvider).closePool;
     }
 }

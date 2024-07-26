@@ -13,7 +13,6 @@ export class CardFindController extends BaseController{
     async execute(
         @body() payload: ICardFindRequestDto,
         @response() res: Response,
-        // @request() req: Request,
     ): Promise<void> {
         // console.log("payload: ")
         // console.log(payload)

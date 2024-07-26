@@ -1,11 +1,13 @@
 import "reflect-metadata";
 import { provide } from "inversify-binding-decorators";
-import { SQL, asc, desc, eq, and, or, inArray, sql } from "drizzle-orm";
+import { SQL, asc, desc, eq, and, or, inArray, sql, like } from "drizzle-orm";
 import {DeckEntity} from "./deck.entity"
 import { BaseRepository } from "../base-repository";
 import { deckTable, userTable, cards } from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
 import { IDeckFindResponseDto } from "./find/deck-find.dto";
+import { IDeckFindCustomRequestDto } from "./find/custom/deck-find-custom.dto";
+import { PgDialect } from "drizzle-orm/pg-core";
 
 @provide(DeckRepository)
 export class DeckRepository extends BaseRepository<DeckEntity>{
@@ -120,12 +122,6 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         }
     }
 
-    // @IsOptional()
-    // @IsIn(['asc', 'desc'], { message: 'orderByName must be either asc or desc' })
-    // nameOrderDirection: 'asc' | 'desc';
-    // @IsOptional()
-    // @IsIn(['asc', 'desc'], { message: 'orderByUpdatedAt must be either asc or desc' })
-    // updatedAtOrderDirection?: 'asc' | 'desc';
     //Used in to display all decks created by a particular creator.
     async findByCreatorId(payload: IDeckFindRequestByCreatorIdDto, userId: string): Promise<DeckEntity[] | null>{
         try {
@@ -140,7 +136,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
             if (userId === payload.creator_id) {
                 whereQuery = query.where(eq(deckTable.creator_id, payload.creator_id));
             } else {
-                //Else, only grab public and unlisted decks that have the creator_id.
+                //Else, only grab public decks that have the creator_id.
                 whereQuery = query.where(
                     and(
                         eq(deckTable.creator_id, payload.creator_id),
@@ -176,6 +172,106 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         } catch {
             console.log("error occured while finding: ")
             return null;
+        }
+    }
+
+    private sanitizeInput(input: string): string {
+        // Remove any characters that aren't alphanumeric, space, or common punctuation
+        return input.replace(/[^a-zA-Z0-9\s.,!?-]/g, '');
+    }
+    private buildCardQuery(payload: IDeckFindCustomRequestDto): SQL<unknown> {
+        const conditions: SQL<unknown>[] = [];
+        
+        // Create a type-safe list of allowed columns
+        const allowedDeckColumns: (keyof typeof deckTable)[] = [
+            "name", "creator_id", "created_at", "updated_at", "folder_id", "banner",
+            "description", "views", "visibility"
+        ];
+        const allowedUserColumns: (keyof typeof userTable)[] = [
+            "username"
+        ];
+        
+        // Dynamic column selection with type-safe check
+        const columns = payload.select && payload.select.length > 0
+            ? [
+                sql`deck.id`, // auto include id in the search
+                ...payload.select
+                    .map(col => {
+                        if (allowedDeckColumns.includes(col as keyof typeof deckTable)) {
+                            return sql`"deck".${sql.raw(col as string)}`;
+                        } else if (allowedUserColumns.includes(col as keyof typeof userTable)) {
+                            return sql`"user".${sql.raw(col as string)}`;//user needs to be surrounded in double quotes as user is also a special word in postgres
+                        }
+                        return null; // or handle unexpected columns as needed
+                    })
+                    .filter((col): col is ReturnType<typeof sql> => col !== null)
+            ]
+            : [sql.raw('*')];
+        
+        // Build WHERE conditions
+        if (payload.name && typeof payload.name === 'string') {
+            conditions.push(sql`(
+            ${like(deckTable.name_lower, `%${this.sanitizeInput(payload.name.toLowerCase())}%`)}
+            )`);
+        }
+        
+        if (payload.creator && typeof payload.creator === 'string') {
+            conditions.push(like(userTable.username, `%${this.sanitizeInput(payload.creator)}%`));
+        }
+
+        conditions.push(eq(deckTable.visibility, 'public'))
+        
+        // Construct the final query
+        const whereClause = conditions.length > 0
+            ? sql` WHERE ${sql.join(conditions, sql` AND `)}`
+            : sql``;
+        
+        const orderByClause: SQL<unknown>[] = []
+        let nameOrderExpression: SQL = desc(deckTable.name);
+        if (payload.nameOrderDirection) {
+            if(payload.nameOrderDirection === "asc") {
+                nameOrderExpression = asc(deckTable.name)
+            }
+            if(payload.nameOrderDirection === "desc") {
+                nameOrderExpression = desc(deckTable.name)
+            }
+            orderByClause.push(nameOrderExpression);
+        }
+        let updatedAtOrderExpression: SQL;
+        if (payload.updatedAtOrderDirection) {
+            if (payload.updatedAtOrderDirection === "asc") {
+                updatedAtOrderExpression = asc(deckTable.updated_at)
+            }
+            else {
+                updatedAtOrderExpression = desc(deckTable.updated_at)
+            }
+            orderByClause.push(updatedAtOrderExpression);
+        }
+        const finalOrderClause = orderByClause.length > 0
+            ? sql` ORDER BY ${sql.join(orderByClause, sql`, `)}`
+            : sql` ORDER BY ${deckTable.name_lower} ASC`;
+
+        return sql`
+            SELECT ${sql.join(columns, sql`, `)}
+            FROM ${deckTable}
+            INNER JOIN ${userTable} ON ${deckTable.creator_id} = ${userTable.id}
+            ${whereClause}
+            ${finalOrderClause}
+        `;
+    }
+
+    async customFind(payload: IDeckFindCustomRequestDto): Promise<DeckEntity[] | null> {
+        try {
+            const query = this.buildCardQuery(payload);
+
+            const pgDialect = new PgDialect();
+            console.log(pgDialect.sqlToQuery(query));
+            
+            const results = await this.db.execute(query);
+            return results.rows as DeckEntity[];
+        } catch (error) {
+            console.error('Error executing query:', error);
+            throw error;
         }
     }
 }
