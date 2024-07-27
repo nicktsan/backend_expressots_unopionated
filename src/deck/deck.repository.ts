@@ -276,10 +276,10 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
             const query = this.buildCardQuery(payload);
 
             const pgDialect = new PgDialect();
-            console.log(pgDialect.sqlToQuery(query));
+            // console.log(pgDialect.sqlToQuery(query));
             
             const results = await this.db.execute(query);
-            console.log(results.rows[0]);
+            // console.log(results.rows[0]);
             return results.rows as DeckEntity[];
         } catch (error) {
             console.error('Error executing query:', error);

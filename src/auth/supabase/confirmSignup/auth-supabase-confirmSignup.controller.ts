@@ -31,8 +31,8 @@ export class AuthSupabaseConfirmSignupController {
             type,
             next,
         };
-        console.log("cookies: ", cookies);
-        console.log("confirmRequest: ", confirmRequest);
+        // console.log("cookies: ", cookies);
+        // console.log("confirmRequest: ", confirmRequest);
         const clientContext: ISupabaseClientContext = {
             reqCookies: cookies,
             res,
