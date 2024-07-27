@@ -7,7 +7,7 @@ import { deckTable, userTable, cards } from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
 import { IDeckFindResponseDto } from "./find/deck-find.dto";
 import { IDeckFindCustomRequestDto } from "./find/custom/deck-find-custom.dto";
-import { PgDialect } from "drizzle-orm/pg-core";
+import { PgColumn, PgDialect } from "drizzle-orm/pg-core";
 
 @provide(DeckRepository)
 export class DeckRepository extends BaseRepository<DeckEntity>{
@@ -179,6 +179,11 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         // Remove any characters that aren't alphanumeric, space, or common punctuation
         return input.replace(/[^a-zA-Z0-9\s.,!?-]/g, '');
     }
+
+    private formatDateTime(column: PgColumn): SQL<string> {
+        return sql<string>`to_char(${column} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`;
+    }
+
     private buildCardQuery(payload: IDeckFindCustomRequestDto): SQL<unknown> {
         const conditions: SQL<unknown>[] = [];
         
@@ -198,6 +203,12 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                 ...payload.select
                     .map(col => {
                         if (allowedDeckColumns.includes(col as keyof typeof deckTable)) {
+                            if (col === 'updated_at') {
+                                return sql`${this.formatDateTime(deckTable.updated_at)} AS updated_at`;
+                            }
+                            if (col === 'created_at') {
+                                return sql`${this.formatDateTime(deckTable.created_at)} AS created_at`;
+                            }
                             return sql`"deck".${sql.raw(col as string)}`;
                         } else if (allowedUserColumns.includes(col as keyof typeof userTable)) {
                             return sql`"user".${sql.raw(col as string)}`;//user needs to be surrounded in double quotes as user is also a special word in postgres
@@ -249,7 +260,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         }
         const finalOrderClause = orderByClause.length > 0
             ? sql` ORDER BY ${sql.join(orderByClause, sql`, `)}`
-            : sql` ORDER BY ${deckTable.name_lower} ASC`;
+            : sql` ORDER BY ${deckTable.updated_at} desc`;
 
         return sql`
             SELECT ${sql.join(columns, sql`, `)}
@@ -268,6 +279,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
             console.log(pgDialect.sqlToQuery(query));
             
             const results = await this.db.execute(query);
+            console.log(results.rows[0]);
             return results.rows as DeckEntity[];
         } catch (error) {
             console.error('Error executing query:', error);

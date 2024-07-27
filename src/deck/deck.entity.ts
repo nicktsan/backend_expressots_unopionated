@@ -7,6 +7,7 @@ export class DeckEntity implements IEntity {
     id: string;
 	name?: string;
 	creator_id?: string;
+	username?: string;
 	folder_id?: string | null;
 	banner?: number | null;
     description?: string | null;
