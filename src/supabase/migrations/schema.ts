@@ -47,7 +47,7 @@ export const userTable = pgTable("user", {
 	email: text("email").unique().notNull(),
 	created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 	updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-	username_lower: text("name_lower"),
+	username_lower: text("username_lower"),
 },
 (table) => {
 	return {

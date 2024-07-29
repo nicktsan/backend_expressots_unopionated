@@ -11,8 +11,13 @@ export class UserRepository extends BaseRepository<UserEntity> {
         this.table = userTable;
     }
     async create(item: UserEntity): Promise<UserEntity | null> {
+        const insertValues = {
+            id: item.id,
+            username: item.username,
+            email: item.email,
+        }
         try {
-            const res: UserEntity[] = await this.db.insert(userTable).values(item).returning({
+            const res: UserEntity[] = await this.db.insert(userTable).values(insertValues).returning({
                     id: userTable.id,
                     username: userTable.username,
                     email: userTable.email,
