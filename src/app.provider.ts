@@ -5,10 +5,10 @@ import {
     Middleware,
     ProviderManager,
 } from "@expressots/core";
-import { ENV } from "./env"
+// import { ENV } from "./env"
 import { appContainer, container } from "./app.container";
 import { DrizzleProvider } from "./db/drizzle/drizzle.provider";
-import cors from "cors";
+// import cors from "cors";
 
 export class App extends AppExpress {
     private middleware: IMiddleware;

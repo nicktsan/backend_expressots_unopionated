@@ -16,7 +16,6 @@ function getToken(req: Request): string | undefined {
 
 //Denies access to the route if the user is unauthorized.
 export async function AuthSupabaseMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // const supabaseProvider: SupabaseProvider = new SupabaseProvider();
     const supabaseProvider: SupabaseProvider = container.get(SupabaseProvider)
     const token = getToken(req);
     if (!token) {
@@ -43,7 +42,6 @@ export async function AuthSupabaseMiddleware(req: Request, res: Response, next: 
 //Fetches authorized user if the token is valid. If the token is invalid, there will be no userid header in the request
 //and this request will be treated as a guest request with limited access to certain data and features.
 export async function getUserMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // const supabaseProvider: SupabaseProvider = new SupabaseProvider();
     const supabaseProvider: SupabaseProvider = container.get(SupabaseProvider)
     const token = getToken(req);
     if (!token) {//If no auth token, the user is a guest and has limited access.
@@ -55,7 +53,7 @@ export async function getUserMiddleware(req: Request, res: Response, next: NextF
     }
     const supabase: SupabaseClient = supabaseProvider.createSupabaseClient(context);
     try {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
+        const { data: { user } } = await supabase.auth.getUser(token);
         if (user) {
             req.headers["userid"] = user?.id
         }

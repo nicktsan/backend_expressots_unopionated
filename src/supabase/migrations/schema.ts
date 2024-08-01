@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, pgSchema, serial, AnyPgColumn, foreignKey, primaryKey, uniqueIndex } from "drizzle-orm/pg-core"
+import { pgTable, index, unique, pgEnum, integer, text, smallint, timestamp, uuid, AnyPgColumn, primaryKey, uniqueIndex } from "drizzle-orm/pg-core"
 //   import { sql } from "drizzle-orm"
 // import { create } from "node:domain"
 

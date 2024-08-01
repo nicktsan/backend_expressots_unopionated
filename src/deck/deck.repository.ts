@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { provide } from "inversify-binding-decorators";
 import { SQL, asc, desc, eq, and, or, inArray, sql, like } from "drizzle-orm";
-import {DeckEntity} from "./deck.entity"
+import { DeckEntity } from "./deck.entity"
 import { BaseRepository } from "../base-repository";
 import { deckTable, userTable, cards } from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";

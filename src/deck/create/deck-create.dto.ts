@@ -1,12 +1,12 @@
-import { IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator"
+import { IsIn, IsNotEmpty, IsOptional, IsString, IsUUID, MinLength } from "class-validator"
 export class IDeckCreateRequestDto {
 	@IsNotEmpty()
 	@MinLength(3)
-	@IsString()
+	@IsString({ message: 'Name must be at least 3 characters long.' })
 	name: string;
 
 	@IsOptional()
-  	@IsString({ message: 'folder_id must be a string or empty' })
+  	@IsUUID()
 	folder_id?: string | null;
 
 	@IsOptional()

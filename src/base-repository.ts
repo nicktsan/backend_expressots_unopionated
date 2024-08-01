@@ -6,7 +6,7 @@ import { provide } from "inversify-binding-decorators";
 import { IBaseRepository } from "./base-repository.interface";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { PgTableWithColumns } from "drizzle-orm/pg-core";
-import { and, eq, SQL, sql, Table } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 @provide(BaseRepository)
 export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
@@ -16,7 +16,6 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
     constructor() {
         this.db = container.get(DrizzleProvider).Drizzle;
     }
-
     async create(item: T): Promise<T | null> {
         try {
             const res = await this.db.insert(this.table).values(item).returning({ id: this.table.id })

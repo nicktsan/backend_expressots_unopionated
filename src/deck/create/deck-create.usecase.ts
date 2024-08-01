@@ -12,16 +12,6 @@ export class DeckCreateUsecase {
         private report: Report,
     ) {}
     public async execute(payload: IDeckCreateRequestDto, userId: string): Promise<IDeckCreateResponseDto | AppError> {
-        // id: uuid("id").primaryKey().notNull(),
-        // name: text("name").unique().notNull(),
-        // creator_id: uuid("creator_id").notNull().references(() => userTable.id, {onDelete: 'cascade'}),
-        // folder_id: uuid("folder_id").references(() => deckFolderTable.id, {onDelete: 'cascade'}),
-        // banner: text("banner"),
-        // description: text("description"),
-        // views: integer("views").notNull().default(0),
-        // visibility: text("visibility").notNull().default("public"),
-        // created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-        // updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
         try {
             this.newDeck.name = payload.name;
             this.newDeck.creator_id = userId;
@@ -53,7 +43,7 @@ export class DeckCreateUsecase {
                 throw error;
             }
             return {
-                id: res!.id,
+                id: res.id,
                 message: "Deck created successfully"
             }
         } catch (error: any) {

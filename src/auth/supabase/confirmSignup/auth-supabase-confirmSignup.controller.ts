@@ -5,8 +5,6 @@ import { AuthSupabaseConfirmUsecase } from "./auth-supabase-confirmSignup.usecas
 import cookieParser from "cookie-parser";
 import { ISupabaseClientContext } from "../supabase.client.context";
 import { StringDictionary } from "../../../stringDictionary";
-import { AuthSupabaseMiddleware } from "../auth-supabase.middleware"
-import cors from "cors"
 
 @controller("/auth/confirm")
 export class AuthSupabaseConfirmSignupController {
