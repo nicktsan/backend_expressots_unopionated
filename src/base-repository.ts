@@ -11,7 +11,7 @@ import { eq, sql } from "drizzle-orm";
 @provide(BaseRepository)
 export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
     protected db: NodePgDatabase<Record<string, never>>;
-    protected table: PgTableWithColumns<any>; //todo fix this any later cuz its stinky
+    protected table: PgTableWithColumns<any>;
 
     constructor() {
         this.db = container.get(DrizzleProvider).Drizzle;

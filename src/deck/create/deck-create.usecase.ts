@@ -19,19 +19,15 @@ export class DeckCreateUsecase {
             this.newDeck.description = payload.description;
             this.newDeck.visibility = payload.visibility;
             
-            //todo check if name is already in database.
-            // const userExists: User | null =
-            //     await this.userRepository.findByEmail(this.user.email);
-
-            // if (userExists) {
-            //     const error = this.report.error(
-            //         "User already exists",
-            //         StatusCode.BadRequest,
-            //         "create-user-usecase",
-            //     );
-
-            //     throw error;
-            // }
+            const deckExists: boolean = await this.deckRepository.findByNameLower(payload.name);
+            if (deckExists) {
+                const error = this.report.error(
+                    "Deck name is already taken",
+                    StatusCode.BadRequest,
+                    "Deck name is already taken",
+                );
+                throw error;
+            }
 
             const res: DeckEntity | null = await this.deckRepository.create(this.newDeck);
             if (!res) {

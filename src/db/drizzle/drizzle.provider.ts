@@ -6,15 +6,15 @@ import { postgres_pool_config } from "./postgres/postgresDB";
 /**
  * Provider to inject the database pool into the container.
  */
-let pool: Pool;
-let db: NodePgDatabase<Record<string, never>>;
-
 @provideSingleton(DrizzleProvider)
 export class DrizzleProvider {
+    private pool: Pool | null = null;
+    private db: NodePgDatabase<Record<string, never>> | null = null;
 
+    private constructor() { }
     private initPool(): void {
-        if (!pool) {
-            pool = new Pool(postgres_pool_config);
+        if (!this.pool) {
+            this.pool = new Pool(postgres_pool_config);
             console.log("Pool created");
         }
         else {
@@ -25,26 +25,26 @@ export class DrizzleProvider {
     
     public get Pool(): Pool {
         this.initPool();
-        return pool;
+        return this.pool;
     }
 
     public get Drizzle(): NodePgDatabase<Record<string, never>> {
         this.initPool();
-        if (!db) {
-            db = drizzle(pool)
+        if (!this.db) {
+            this.db = drizzle(this.pool)
             console.log("Drizzle created");
         }
         else {
             // console.log("Drizzle already exists");
         }
         // console.log(db)
-        return db
+        return this.db
     }
 
     public get closePool(): boolean {
         try{
-            if (pool) {
-                pool.end();
+            if (this.pool) {
+                this.pool.end();
                 console.log("Pool closed");
             }
         }

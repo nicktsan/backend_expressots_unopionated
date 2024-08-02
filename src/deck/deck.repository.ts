@@ -175,6 +175,23 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
         }
     }
 
+    async findByNameLower(name: string): Promise<boolean>{
+        try {
+            const res = await this.db.select({
+                id: deckTable.id,
+                name: deckTable.name,
+            }).from(deckTable).where(eq(deckTable.name_lower, name.toLowerCase()));
+            // console.log("res from findByNameLower: ", res)
+            if (res.length > 0) {
+                return true;
+            }
+            return false;
+        } catch(error) {
+            console.log("error occured while finding by name_lower: ")
+            throw error
+        }
+    }
+
     private sanitizeInput(input: string): string {
         // Remove any characters that aren't alphanumeric, space, or common punctuation
         return input.replace(/[^a-zA-Z0-9\s.,!?-]/g, '');
