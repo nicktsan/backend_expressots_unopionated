@@ -11,6 +11,7 @@ export class DeckFindUsecase {
     ) {}
     public async execute(payload: IDeckFindRequestDto, userId: string): Promise<IDeckFindResponseDto | AppError> {
         const res: IDeckFindResponseDto | null = await this.deckRepository.findById(payload.id, userId);
+        // console.log("res in deck-find.usecase(execute): ", res)
         if (!res) {
             const error = this.report.error(
                 "This deck not found",

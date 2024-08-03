@@ -52,62 +52,60 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
     //If the user is just a guest, they will only be able to select a public or unlisted deck.
     async findById(id: string, userId: string): Promise<IDeckFindResponseDto | null> {
         try {
-
-            const query = this.db.select({
-                id: deckTable.id,
-                name: deckTable.name,
-                creator_id: deckTable.creator_id,
-                creator_username: userTable.username,
-                banner_url: cards.image_link,
-                description: deckTable.description,
-                views: deckTable.views,
-                updated_at: deckTable.updated_at,
-            }).from(deckTable)
-            .innerJoin(userTable, eq(deckTable.creator_id, userTable.id))
-            .leftJoin(cards, eq(deckTable.banner, cards.id));
-            
-            let finalQuery;
-            //Requests with userIds are made by authorized users. Therefore, they should be able to find decks with
-            //visibility set to 'private' if they are the creator of those decks.
+            const selectSql: SQL = sql`
+                SELECT 
+                deck.id,
+                deck.name,
+                deck.creator_id,
+                "user".username,
+                cards.image_link,
+                deck.description,
+                deck.views,
+                ${this.formatDateTime(deckTable.updated_at)} AS updated_at,
+                EXTRACT(year FROM age(NOW(), deck.updated_at)) AS years,
+                EXTRACT(month FROM age(NOW(), deck.updated_at)) AS months,
+                EXTRACT(day FROM age(NOW(), deck.updated_at)) AS days,
+                EXTRACT(hour FROM age(NOW(), deck.updated_at)) AS hours,
+                EXTRACT(minute FROM age(NOW(), deck.updated_at)) AS minutes,
+                EXTRACT(second FROM age(NOW(), deck.updated_at)) AS seconds
+                FROM deck 
+                INNER JOIN "user" ON deck.creator_id = "user".id
+                LEFT JOIN cards ON deck.banner = cards.id
+                WHERE deck.id = ${id}
+            `;
+            let whereSql: SQL = sql`
+                AND deck.visibility IN ('public', 'unlisted');
+            `
             if (userId) {
-                finalQuery = query.where(
-                    and(
-                        eq(deckTable.id, id),
-                        or(
-                            inArray(deckTable.visibility, ['public', 'unlisted']),
-                            eq(deckTable.creator_id, userId ?? "")
-                            // and(
-                            //     eq(deckTable.visibility, 'private'),
-                            //     eq(deckTable.creator_id, userId ?? "")
-                            // )
-                        )
+                whereSql = sql`
+                    AND (
+                    deck.visibility IN ('public', 'unlisted')
+                    or
+                    deck.creator_id = ${userId}
                     )
-                );
-            } else {
-                //Else, the userId is empty, which means the request is made by a guest. Therefore, they are not allowed
-                //to find any decks that have their visibility set to 'private'.
-                finalQuery = query.where(
-                    and(
-                        eq(deckTable.id, id),
-                        inArray(deckTable.visibility, ['public', 'unlisted'])
-                    )
-                );
+                `
             }
-            
-            // const { sql: sqlString, params } = finalQuery.toSQL();
-            // console.log('Parameters:', params);
-            // console.log('SQL Query:', sqlString);
-            const res = await finalQuery;
-            if (res.length > 0) {
+            const finalQuery: SQL = sql`${selectSql} ${whereSql}`;
+            // const pgDialect = new PgDialect();
+            // console.log(pgDialect.sqlToQuery(finalQuery));
+            const res = await this.db.execute(finalQuery);
+            // console.log(res.rows);
+            if (res.rows.length > 0) {
                 const finalRes: IDeckFindResponseDto = {
-                    id: res[0].id,
-                    name: res[0].name,
-                    creator_id: res[0].creator_id,
-                    creator_username: res[0].creator_username,
-                    banner_url: res[0].banner_url,
-                    description: res[0].description,
-                    views: res[0].views,
-                    updated_at: res[0].updated_at,
+                    id: res.rows[0].id,
+                    name: res.rows[0].name,
+                    creator_id: res.rows[0].creator_id,
+                    creator_username: res.rows[0].creator_username,
+                    banner_url: res.rows[0].banner_url,
+                    description: res.rows[0].description,
+                    views: res.rows[0].views,
+                    updated_at: res.rows[0].updated_at,
+                    years: Number(res.rows[0].years),
+                    months: Number(res.rows[0].months),
+                    days: Number(res.rows[0].days),
+                    hours: Number(res.rows[0].hours),
+                    minutes: Number(res.rows[0].minutes),
+                    seconds: Number(res.rows[0].seconds),
                     message: "This deck successfully found."
                 }
                 // console.log("finalRes from findById: ", finalRes)

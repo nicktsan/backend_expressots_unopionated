@@ -14,5 +14,12 @@ export interface IDeckFindResponseDto {
     description: string | null;
     views: number;
     updated_at: Date | null;
+    years: number;
+    months: number;
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
     message: string;
+
 }
