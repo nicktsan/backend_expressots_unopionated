@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { IEntity } from "./base.entity";
-import { DrizzleProvider } from "./db/drizzle/drizzle.provider"
+import { DrizzleProvider } from "./db/drizzle/drizzle.provider";
 import { container } from "./app.container";
 import { provide } from "inversify-binding-decorators";
 import { IBaseRepository } from "./base-repository.interface";
@@ -18,24 +18,29 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
     }
     async create(item: T): Promise<T | null> {
         try {
-            const res = await this.db.insert(this.table).values(item).returning({ id: this.table.id })
+            const res = await this.db
+                .insert(this.table)
+                .values(item)
+                .returning({ id: this.table.id });
             return res[0] as T;
         } catch (error) {
-            console.log("error occured while creating: ")
-            console.log(error)
-            return null
+            console.log("error occured while creating: ");
+            console.log(error);
+            return null;
         }
     }
 
     async delete(id: string): Promise<boolean> {
         try {
-            const res = await this.db.delete(this.table).where(
-                eq(this.table.id, id)).returning({ deletedId: this.table.id })
-            return res.length > 0
+            const res = await this.db
+                .delete(this.table)
+                .where(eq(this.table.id, id))
+                .returning({ deletedId: this.table.id });
+            return res.length > 0;
         } catch (error) {
-            console.log("error occured while deleting: ")
-            console.log(error)
-            return false
+            console.log("error occured while deleting: ");
+            console.log(error);
+            return false;
         }
     }
 
@@ -47,13 +52,13 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
     // );
     async update(item: T, hasUpdateAt: boolean): Promise<T | null> {
         try {
-            const { id, ...itemWithoutId } = item
+            const { id, ...itemWithoutId } = item;
 
             // Start building the query
             const queryParts: string[] = [];
             // Dynamically add each field to the query
             for (const [key, value] of Object.entries(itemWithoutId)) {
-                if (value !== undefined && key !== 'id') {
+                if (value !== undefined && key !== "id") {
                     queryParts.push(`${key} = '${value}'`);
                 }
             }
@@ -64,7 +69,7 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
             // console.log(queryParts)
 
             // Combine all updates
-            const setClause = queryParts.join(', ');
+            const setClause = queryParts.join(", ");
 
             // Build the full query
             const query = sql`
@@ -73,30 +78,37 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
                 WHERE id = ${id}
                 RETURNING *
             `;
-            const finalQuery = this.db.execute(query)
+            const finalQuery = this.db.execute(query);
             // console.log(finalQuery)
-            const res = await finalQuery
+            const res = await finalQuery;
             const updatedRow = res.rows[0] as T;
             if (updatedRow && (updatedRow as any).updated_at) {
-                (updatedRow as any).updated_at = new Date((updatedRow as any).updated_at).toISOString();
+                (updatedRow as any).updated_at = new Date(
+                    (updatedRow as any).updated_at,
+                ).toISOString();
             }
             if (updatedRow && (updatedRow as any).created_at) {
-                (updatedRow as any).created_at = new Date((updatedRow as any).created_at).toISOString();
+                (updatedRow as any).created_at = new Date(
+                    (updatedRow as any).created_at,
+                ).toISOString();
             }
             return updatedRow as T;
         } catch (error) {
-            console.log("error occured while updating: ")
-            console.log(error)
-            return null
+            console.log("error occured while updating: ");
+            console.log(error);
+            return null;
         }
     }
 
     async find(id: string): Promise<T | null> {
         try {
-            const res = await this.db.select().from(this.table).where(eq(this.table.id, id));
+            const res = await this.db
+                .select()
+                .from(this.table)
+                .where(eq(this.table.id, id));
             return res[0] as T;
         } catch {
-            console.log("error occured while finding: ")
+            console.log("error occured while finding: ");
             return null;
         }
     }
@@ -106,14 +118,15 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
             const fields = Object.keys(item)
                 .map((key, index) => `${key} = $${index + 1}`)
                 .join(", ");
-            
-            const res = await this.db.execute(sql`select ${fields} from ${this.table}`);
+
+            const res = await this.db.execute(
+                sql`select ${fields} from ${this.table}`,
+            );
             return res as T[];
-        }
-        catch (error) {
-            console.log("error occured while finding all: ")
-            console.log(error)
-            return []
+        } catch (error) {
+            console.log("error occured while finding all: ");
+            console.log(error);
+            return [];
         }
     }
 }

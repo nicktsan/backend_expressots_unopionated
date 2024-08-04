@@ -1,5 +1,16 @@
-import { Post, body, controller, request, response } from "@expressots/adapter-express";
-import { BaseController, StatusCode, ValidateDTO, AppError } from "@expressots/core";
+import {
+    Post,
+    body,
+    controller,
+    request,
+    response,
+} from "@expressots/adapter-express";
+import {
+    BaseController,
+    StatusCode,
+    ValidateDTO,
+    AppError,
+} from "@expressots/core";
 import { DeckslotCreateUsecase } from "./deckslot-create.usecase";
 import cookieParser from "cookie-parser";
 import { IDeckslotCreateRequestDto } from "./deckslot-create.dto";
@@ -7,12 +18,17 @@ import { Response, Request } from "express";
 import { AuthSupabaseMiddleware } from "../../auth/supabase/auth-supabase.middleware";
 
 @controller("/deckslot/create")
-export class DeckslotCreateController extends BaseController{
+export class DeckslotCreateController extends BaseController {
     constructor(private deckslotCreateUsecase: DeckslotCreateUsecase) {
         super();
     }
 
-    @Post("", cookieParser(), ValidateDTO(IDeckslotCreateRequestDto), AuthSupabaseMiddleware)
+    @Post(
+        "",
+        cookieParser(),
+        ValidateDTO(IDeckslotCreateRequestDto),
+        AuthSupabaseMiddleware,
+    )
     async execute(
         @body() payload: IDeckslotCreateRequestDto,
         @response() res: Response,
@@ -22,7 +38,10 @@ export class DeckslotCreateController extends BaseController{
         // console.log("payload: ")
         // console.log(payload)
         return this.callUseCase(
-            await this.deckslotCreateUsecase.execute(payload, req.headers["userid"] as string),
+            await this.deckslotCreateUsecase.execute(
+                payload,
+                req.headers["userid"] as string,
+            ),
             res,
             StatusCode.Created,
         );

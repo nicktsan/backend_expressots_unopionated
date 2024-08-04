@@ -11,18 +11,17 @@ export class DrizzleProvider {
     private pool: Pool | null = null;
     private db: NodePgDatabase<Record<string, never>> | null = null;
 
-    private constructor() { }
+    private constructor() {}
     private initPool(): void {
         if (!this.pool) {
             this.pool = new Pool(postgres_pool_config);
             console.log("Pool created");
-        }
-        else {
+        } else {
             // console.log("Pool already exists");
         }
         // console.log(pool)
     }
-    
+
     public get Pool(): Pool {
         this.initPool();
         return this.pool;
@@ -31,24 +30,22 @@ export class DrizzleProvider {
     public get Drizzle(): NodePgDatabase<Record<string, never>> {
         this.initPool();
         if (!this.db) {
-            this.db = drizzle(this.pool)
+            this.db = drizzle(this.pool);
             console.log("Drizzle created");
-        }
-        else {
+        } else {
             // console.log("Drizzle already exists");
         }
         // console.log(db)
-        return this.db
+        return this.db;
     }
 
     public get closePool(): boolean {
-        try{
+        try {
             if (this.pool) {
                 this.pool.end();
                 console.log("Pool closed");
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error while closing pool");
             console.log(error);
             return false;

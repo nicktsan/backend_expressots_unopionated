@@ -17,5 +17,5 @@ export const container = appContainer.create([
     UserModule,
     DeckModule,
     DeckslotModule,
-    CardModule
+    CardModule,
 ]);

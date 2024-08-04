@@ -1,7 +1,6 @@
 import { provide } from "inversify-binding-decorators";
 import { IEntity } from "./../base.entity";
 
-
 @provide(UserEntity)
 export class UserEntity implements IEntity {
     id: string;

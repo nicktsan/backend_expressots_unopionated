@@ -5,4 +5,9 @@ import { DeckslotFindBydeckidController } from "./find/bydeckid/deckslot-find-by
 import { DeckslotDeleteController } from "./delete/deckslot-delete.controller";
 import { DeckslotUpdateQuantityController } from "./update/quantity/deckslot-update-quantity.controller";
 
-export const DeckslotModule: ContainerModule = CreateModule([DeckslotUpdateQuantityController, DeckslotCreateController, DeckslotFindBydeckidController, DeckslotDeleteController]);
+export const DeckslotModule: ContainerModule = CreateModule([
+    DeckslotUpdateQuantityController,
+    DeckslotCreateController,
+    DeckslotFindBydeckidController,
+    DeckslotDeleteController,
+]);

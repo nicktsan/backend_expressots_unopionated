@@ -1,5 +1,11 @@
-import { Get, controller, headers, query, response } from "@expressots/adapter-express";
-import { BaseController, StatusCode} from "@expressots/core";
+import {
+    Get,
+    controller,
+    headers,
+    query,
+    response,
+} from "@expressots/adapter-express";
+import { BaseController, StatusCode } from "@expressots/core";
 import { DeckFindByCreatorIdUsecase } from "./deck-find-byCreatorId.usecase";
 import cookieParser from "cookie-parser";
 import { IDeckFindRequestByCreatorIdDto } from "./deck-find-byCreatorId.dto";
@@ -8,11 +14,18 @@ import { getUserMiddleware } from "../../../auth/supabase/auth-supabase.middlewa
 import { ValidateReqQueryDTO } from "../../../utils/middleware/requestMiddleWare";
 
 @controller("/deck/find/bycreatorid")
-export class DeckFindByCreatorIdController extends BaseController{
-    constructor(private DeckFindByCreatorIdUsecase: DeckFindByCreatorIdUsecase) {
+export class DeckFindByCreatorIdController extends BaseController {
+    constructor(
+        private DeckFindByCreatorIdUsecase: DeckFindByCreatorIdUsecase,
+    ) {
         super();
     }
-    @Get("", cookieParser(), ValidateReqQueryDTO(IDeckFindRequestByCreatorIdDto), getUserMiddleware)
+    @Get(
+        "",
+        cookieParser(),
+        ValidateReqQueryDTO(IDeckFindRequestByCreatorIdDto),
+        getUserMiddleware,
+    )
     async execute(
         @response() res: Response,
         @query() reqQuery: IDeckFindRequestByCreatorIdDto,

@@ -1,4 +1,4 @@
-import { ENV } from "../../../../src/env"
+import { ENV } from "../../../../src/env";
 /**
  * Configuration of the database pool.
  */

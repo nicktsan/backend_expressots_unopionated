@@ -1,7 +1,10 @@
 import { provide } from "inversify-binding-decorators";
-import { IDeckslotDeleteRequestDto, IDeckslotDeleteResponseDto } from "./deckslot-delete.dto";
+import {
+    IDeckslotDeleteRequestDto,
+    IDeckslotDeleteResponseDto,
+} from "./deckslot-delete.dto";
 import { DeckSlotRepository } from "../deckslot.repository";
-import { DeckRepository } from "../../deck/deck.repository"
+import { DeckRepository } from "../../deck/deck.repository";
 import { AppError, Report, StatusCode } from "@expressots/core";
 
 @provide(DeckslotDeleteUsecase)
@@ -11,10 +14,14 @@ export class DeckslotDeleteUsecase {
         private deckRepository: DeckRepository,
         private report: Report,
     ) {}
-    public async execute(payload: IDeckslotDeleteRequestDto, userId: string): Promise<IDeckslotDeleteResponseDto | AppError> {
+    public async execute(
+        payload: IDeckslotDeleteRequestDto,
+        userId: string,
+    ): Promise<IDeckslotDeleteResponseDto | AppError> {
         try {
             //First, check if the user making this request is the creator of the deck.
-            const isDeckCreator: Record<string, string> | null = await this.deckRepository.checkCreator(payload.deck_id, userId);
+            const isDeckCreator: Record<string, string> | null =
+                await this.deckRepository.checkCreator(payload.deck_id, userId);
             if (!isDeckCreator) {
                 const error = this.report.error(
                     "User is not the creator of the deck.",
@@ -31,7 +38,8 @@ export class DeckslotDeleteUsecase {
             // if (deckSlotExists) {
             // }
 
-            const res: IDeckslotDeleteResponseDto | null = await this.deckSlotRepository.deleteOneDeckSlot(payload);
+            const res: IDeckslotDeleteResponseDto | null =
+                await this.deckSlotRepository.deleteOneDeckSlot(payload);
             if (!res) {
                 const error = this.report.error(
                     "Failed to delete deckslot.",
@@ -42,7 +50,7 @@ export class DeckslotDeleteUsecase {
             }
             return res;
         } catch (error: any) {
-            console.log("Error occured during deck deletion:")
+            console.log("Error occured during deck deletion:");
             throw error;
         }
     }

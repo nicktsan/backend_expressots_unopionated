@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsUUID } from "class-validator"
-import { IDeckslotFindResponseDto } from "../deckslot-find.dto"
+import { IsNotEmpty, IsUUID } from "class-validator";
+import { IDeckslotFindResponseDto } from "../deckslot-find.dto";
 export class IDeckslotFindByDeckIdRequestDto {
     @IsNotEmpty()
     @IsUUID()
@@ -7,6 +7,6 @@ export class IDeckslotFindByDeckIdRequestDto {
 }
 
 export interface IDeckslotFindByDeckIdResponseDto {
-    deckslots: IDeckslotFindResponseDto[],
+    deckslots: IDeckslotFindResponseDto[];
     message: string;
 }

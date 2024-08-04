@@ -1,4 +1,9 @@
-import { Get, controller, headers, response } from "@expressots/adapter-express";
+import {
+    Get,
+    controller,
+    headers,
+    response,
+} from "@expressots/adapter-express";
 import { BaseController, StatusCode } from "@expressots/core";
 import { UserFindResponseDTO } from "../find/user-find.dto";
 import { UserCreateUsecase } from "./user-create.usecase";
@@ -8,7 +13,6 @@ export class UserCreateController extends BaseController {
     // constructor(private UserCreateUsecase: UserCreateUsecase) {
     //     super();
     // }
-
     // @Get("")
     // async execute(
     //     // @param() payload: UserFindRequestDTO,

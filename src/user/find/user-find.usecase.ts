@@ -10,9 +10,7 @@ export class UserFindUseCase {
         private report: Report,
     ) {}
 
-    async execute(
-        email: string,
-    ): Promise<UserFindResponseDTO | null> {
+    async execute(email: string): Promise<UserFindResponseDTO | null> {
         const userExists = await this.userRepository.findByEmail(email);
 
         if (!userExists) {

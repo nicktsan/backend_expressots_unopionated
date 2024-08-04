@@ -1,4 +1,10 @@
-import { Get, controller, headers, query, response } from "@expressots/adapter-express";
+import {
+    Get,
+    controller,
+    headers,
+    query,
+    response,
+} from "@expressots/adapter-express";
 import { BaseController, StatusCode } from "@expressots/core";
 import { DeckslotFindBydeckidUsecase } from "./deckslot-find-bydeckid.usecase";
 import cookieParser from "cookie-parser";
@@ -8,12 +14,19 @@ import { getUserMiddleware } from "../../../auth/supabase/auth-supabase.middlewa
 import { ValidateReqQueryDTO } from "../../../utils/middleware/requestMiddleWare";
 
 @controller("/deckslot/find/bydeckid")
-export class DeckslotFindBydeckidController extends BaseController{
-    constructor(private deckslotFindBydeckidUsecase: DeckslotFindBydeckidUsecase) {
+export class DeckslotFindBydeckidController extends BaseController {
+    constructor(
+        private deckslotFindBydeckidUsecase: DeckslotFindBydeckidUsecase,
+    ) {
         super();
     }
 
-    @Get("", cookieParser(), ValidateReqQueryDTO(IDeckslotFindByDeckIdRequestDto), getUserMiddleware)
+    @Get(
+        "",
+        cookieParser(),
+        ValidateReqQueryDTO(IDeckslotFindByDeckIdRequestDto),
+        getUserMiddleware,
+    )
     async execute(
         @response() res: Response,
         @query() reqQuery: IDeckslotFindByDeckIdRequestDto,

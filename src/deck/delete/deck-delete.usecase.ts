@@ -9,10 +9,14 @@ export class DeckDeleteUsecase {
         private deckRepository: DeckRepository,
         private report: Report,
     ) {}
-    public async execute(id: string, userId: string): Promise<IDeckDeleteResponseDto | AppError> {
+    public async execute(
+        id: string,
+        userId: string,
+    ): Promise<IDeckDeleteResponseDto | AppError> {
         try {
             //First, check if the user making this request is the creator of the deck.
-            const isDeckCreator: Record<string, string> | null = await this.deckRepository.checkCreator(id, userId);
+            const isDeckCreator: Record<string, string> | null =
+                await this.deckRepository.checkCreator(id, userId);
             if (!isDeckCreator) {
                 const error = this.report.error(
                     "User is not the creator of the deck.",
@@ -33,10 +37,10 @@ export class DeckDeleteUsecase {
             }
             return {
                 isDeleted: res,
-                message: "Deck deleted successfully."
+                message: "Deck deleted successfully.",
             };
         } catch (error: any) {
-            console.log("Error occured during deck deletion:")
+            console.log("Error occured during deck deletion:");
             throw error;
         }
     }

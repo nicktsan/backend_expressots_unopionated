@@ -7,4 +7,11 @@ import { DeckUpdateController } from "./update/deck-update.controller";
 import { DeckDeleteController } from "./delete/deck-delete.controller";
 import { DeckFindCustomController } from "./find/custom/deck-find-custom.controller";
 
-export const DeckModule: ContainerModule = CreateModule([DeckCreateController, DeckFindController, DeckFindByCreatorIdController, DeckFindCustomController, DeckUpdateController, DeckDeleteController]);
+export const DeckModule: ContainerModule = CreateModule([
+    DeckCreateController,
+    DeckFindController,
+    DeckFindByCreatorIdController,
+    DeckFindCustomController,
+    DeckUpdateController,
+    DeckDeleteController,
+]);

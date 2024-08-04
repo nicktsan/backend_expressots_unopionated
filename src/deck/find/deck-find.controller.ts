@@ -1,4 +1,10 @@
-import { Get, controller, headers, query, response } from "@expressots/adapter-express";
+import {
+    Get,
+    controller,
+    headers,
+    query,
+    response,
+} from "@expressots/adapter-express";
 import { BaseController, StatusCode } from "@expressots/core";
 import { DeckFindUsecase } from "./deck-find.usecase";
 import cookieParser from "cookie-parser";
@@ -8,11 +14,16 @@ import { getUserMiddleware } from "../../auth/supabase/auth-supabase.middleware"
 import { ValidateReqQueryDTO } from "../../utils/middleware/requestMiddleWare";
 
 @controller("/deck/find")
-export class DeckFindController extends BaseController{
+export class DeckFindController extends BaseController {
     constructor(private deckFindUsecase: DeckFindUsecase) {
         super();
     }
-    @Get("", cookieParser(), ValidateReqQueryDTO(IDeckFindRequestDto), getUserMiddleware)
+    @Get(
+        "",
+        cookieParser(),
+        ValidateReqQueryDTO(IDeckFindRequestDto),
+        getUserMiddleware,
+    )
     async execute(
         @response() res: Response,
         @query() reqQuery: IDeckFindRequestDto,

@@ -11,7 +11,6 @@ export class AppController {
     @Get("execute2")
     execute2(@response() res: Response) {
         // return "Hello from ExpressoTS!";
-        res.render("index2", { user: "nicktsang2"});
-        
+        res.render("index2", { user: "nicktsang2" });
     }
 }

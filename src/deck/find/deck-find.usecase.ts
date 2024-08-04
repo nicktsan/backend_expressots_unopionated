@@ -9,8 +9,12 @@ export class DeckFindUsecase {
         private deckRepository: DeckRepository,
         private report: Report,
     ) {}
-    public async execute(payload: IDeckFindRequestDto, userId: string): Promise<IDeckFindResponseDto | AppError> {
-        const res: IDeckFindResponseDto | null = await this.deckRepository.findById(payload.id, userId);
+    public async execute(
+        payload: IDeckFindRequestDto,
+        userId: string,
+    ): Promise<IDeckFindResponseDto | AppError> {
+        const res: IDeckFindResponseDto | null =
+            await this.deckRepository.findById(payload.id, userId);
         // console.log("res in deck-find.usecase(execute): ", res)
         if (!res) {
             const error = this.report.error(
@@ -21,12 +25,14 @@ export class DeckFindUsecase {
             throw error;
         }
         //increment the deck view by 1 after finding the deck.
-        const incrementData = await this.deckRepository.incrementDeckView(payload.id)
+        const incrementData = await this.deckRepository.incrementDeckView(
+            payload.id,
+        );
         // console.log("res in deck-find.usecase(execute): ")
         // console.log(res)
         if (incrementData) {
-            res.views = incrementData.views!
+            res.views = incrementData.views!;
         }
-        return res
+        return res;
     }
 }

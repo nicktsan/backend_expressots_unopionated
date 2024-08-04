@@ -1,4 +1,10 @@
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsUUID } from "class-validator"
+import {
+    IsIn,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsUUID,
+} from "class-validator";
 export class IDeckslotDeleteRequestDto {
     @IsNotEmpty()
     @IsUUID()
@@ -7,8 +13,8 @@ export class IDeckslotDeleteRequestDto {
     @IsNumber()
     card_id: number;
     @IsOptional()
-    @IsIn(['main', 'maybe'], { message: `board must be "main" or "maybe"` })
-    board?: string
+    @IsIn(["main", "maybe"], { message: `board must be "main" or "maybe"` })
+    board?: string;
 }
 
 export interface IDeckslotDeleteResponseDto {

@@ -1,4 +1,10 @@
-import { Delete, body, controller, request, response } from "@expressots/adapter-express";
+import {
+    Delete,
+    body,
+    controller,
+    request,
+    response,
+} from "@expressots/adapter-express";
 import { BaseController, StatusCode, ValidateDTO } from "@expressots/core";
 import { DeckDeleteUsecase } from "./deck-delete.usecase";
 import cookieParser from "cookie-parser";
@@ -7,12 +13,17 @@ import { Response, Request } from "express";
 import { AuthSupabaseMiddleware } from "../../auth/supabase/auth-supabase.middleware";
 
 @controller("/deck/delete")
-export class DeckDeleteController extends BaseController{
+export class DeckDeleteController extends BaseController {
     constructor(private deckDeleteUsecase: DeckDeleteUsecase) {
         super();
     }
 
-    @Delete("", cookieParser(), ValidateDTO(IDeckDeleteRequestDto), AuthSupabaseMiddleware)
+    @Delete(
+        "",
+        cookieParser(),
+        ValidateDTO(IDeckDeleteRequestDto),
+        AuthSupabaseMiddleware,
+    )
     async execute(
         @body() payload: IDeckDeleteRequestDto,
         @response() res: Response,
@@ -22,7 +33,10 @@ export class DeckDeleteController extends BaseController{
         // console.log("payload: ")
         // console.log(payload)
         return this.callUseCase(
-            await this.deckDeleteUsecase.execute(payload.id, req.headers["userid"] as string),
+            await this.deckDeleteUsecase.execute(
+                payload.id,
+                req.headers["userid"] as string,
+            ),
             res,
             StatusCode.OK,
         );

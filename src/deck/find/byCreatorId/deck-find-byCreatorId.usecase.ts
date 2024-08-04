@@ -1,5 +1,8 @@
 import { provide } from "inversify-binding-decorators";
-import { IDeckFindRequestByCreatorIdDto, IDeckFindResponseByCreatorIdDto } from "./deck-find-byCreatorId.dto";
+import {
+    IDeckFindRequestByCreatorIdDto,
+    IDeckFindResponseByCreatorIdDto,
+} from "./deck-find-byCreatorId.dto";
 import { DeckRepository } from "../../deck.repository";
 import { DeckEntity } from "../../deck.entity";
 import { AppError, Report, StatusCode } from "@expressots/core";
@@ -10,7 +13,10 @@ export class DeckFindByCreatorIdUsecase {
         private deckRepository: DeckRepository,
         private report: Report,
     ) {}
-    public async execute(payload: IDeckFindRequestByCreatorIdDto, userId: string): Promise<IDeckFindResponseByCreatorIdDto | AppError> {
+    public async execute(
+        payload: IDeckFindRequestByCreatorIdDto,
+        userId: string,
+    ): Promise<IDeckFindResponseByCreatorIdDto | AppError> {
         // id: uuid("id").primaryKey().notNull(),
         // name: text("name").unique().notNull(),
         // creator_id: uuid("creator_id").notNull().references(() => userTable.id, {onDelete: 'cascade'}),
@@ -33,7 +39,8 @@ export class DeckFindByCreatorIdUsecase {
         // @IsIn(['asc', 'desc'], { message: 'orderByUpdatedAt must be either asc or desc' })
         // updatedAtOrderDirection?: 'asc' | 'desc';
         try {
-            const res: DeckEntity[] | null = await this.deckRepository.findByCreatorId(payload, userId);
+            const res: DeckEntity[] | null =
+                await this.deckRepository.findByCreatorId(payload, userId);
             if (!res) {
                 const error = this.report.error(
                     "User's decks not found",
@@ -52,10 +59,10 @@ export class DeckFindByCreatorIdUsecase {
             }
             return {
                 decks: res,
-                message: "User's decks found successfully."
-            }
+                message: "User's decks found successfully.",
+            };
         } catch (error: any) {
-            console.log("Error occured while finding user's decks:")
+            console.log("Error occured while finding user's decks:");
             throw error;
         }
     }

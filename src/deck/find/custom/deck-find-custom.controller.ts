@@ -6,7 +6,7 @@ import { Response } from "express";
 import { ValidateReqQueryDTO } from "../../../utils/middleware/requestMiddleWare";
 
 @controller("/deck/find/custom")
-export class DeckFindCustomController extends BaseController{
+export class DeckFindCustomController extends BaseController {
     constructor(private deckFindUsecase: DeckFindCustomUsecase) {
         super();
     }

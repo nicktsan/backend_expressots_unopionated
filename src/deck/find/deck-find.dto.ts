@@ -21,5 +21,4 @@ export interface IDeckFindResponseDto {
     minutes: number;
     seconds: number;
     message: string;
-
 }

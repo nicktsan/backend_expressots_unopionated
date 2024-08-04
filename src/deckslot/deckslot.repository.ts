@@ -1,17 +1,29 @@
 import "reflect-metadata";
 import { provide } from "inversify-binding-decorators";
-import {DeckSlotEntity} from "./deckslot.entity"
+import { DeckSlotEntity } from "./deckslot.entity";
 import { BaseRepository } from "../base-repository";
 import { cards, deckTable, deckslotTable } from "../supabase/migrations/schema";
-import { IDeckslotCreateRequestDto, IDeckslotCreateResponseDto } from "./create/deckslot-create.dto";
+import {
+    IDeckslotCreateRequestDto,
+    IDeckslotCreateResponseDto,
+} from "./create/deckslot-create.dto";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
-import { IDeckslotUpdateQuantityRequestDto, IDeckslotUpdateQuantityResponseDto } from "./update/quantity/deckslot-update-quantity.dto";
-import { IDeckslotFindRequestDto, IDeckslotFindResponseDto } from "./find/deckslot-find.dto";
+import {
+    IDeckslotUpdateQuantityRequestDto,
+    IDeckslotUpdateQuantityResponseDto,
+} from "./update/quantity/deckslot-update-quantity.dto";
+import {
+    IDeckslotFindRequestDto,
+    IDeckslotFindResponseDto,
+} from "./find/deckslot-find.dto";
 import { IDeckslotFindByDeckIdResponseDto } from "./find/bydeckid/deckslot-find-bydeckid.dto";
-import { IDeckslotDeleteRequestDto, IDeckslotDeleteResponseDto } from "./delete/deckslot-delete.dto";
+import {
+    IDeckslotDeleteRequestDto,
+    IDeckslotDeleteResponseDto,
+} from "./delete/deckslot-delete.dto";
 
 @provide(DeckSlotRepository)
-export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
+export class DeckSlotRepository extends BaseRepository<DeckSlotEntity> {
     constructor() {
         super();
         this.table = deckslotTable;
@@ -20,28 +32,33 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
     //Find all deckslots and its card data by its deckslot.deck_id. If the request is made by an authorized user,
     //they may see deckslots belonging to private decks that belong to the authorized user.
     //If the user is not signed in, then they can only see public and unlisted deckslots.
-    async findByDeckId(deckId: string, userId: string): Promise<IDeckslotFindByDeckIdResponseDto | null> {
+    async findByDeckId(
+        deckId: string,
+        userId: string,
+    ): Promise<IDeckslotFindByDeckIdResponseDto | null> {
         try {
-            const query = this.db.select({
-                deck_id: deckslotTable.deck_id,
-                card_id: deckslotTable.card_id,
-                board: deckslotTable.board,
-                quantity: deckslotTable.quantity,
-                name_eng: cards.name_eng,
-                name_kr: cards.name_kr,
-                code: cards.code,
-                rarity: cards.rarity,
-                card_type: cards.card_type,
-                color: cards.color,
-                card_level: cards.card_level,
-                plain_text_eng: cards.plain_text_eng,
-                plain_text: cards.plain_text,
-                expansion: cards.expansion,
-                illustrator: cards.illustrator,
-                image_link: cards.image_link
-            }).from(deckslotTable)
-            .innerJoin(cards, eq(deckslotTable.card_id, cards.id))
-            .innerJoin(deckTable, eq(deckslotTable.deck_id, deckTable.id));
+            const query = this.db
+                .select({
+                    deck_id: deckslotTable.deck_id,
+                    card_id: deckslotTable.card_id,
+                    board: deckslotTable.board,
+                    quantity: deckslotTable.quantity,
+                    name_eng: cards.name_eng,
+                    name_kr: cards.name_kr,
+                    code: cards.code,
+                    rarity: cards.rarity,
+                    card_type: cards.card_type,
+                    color: cards.color,
+                    card_level: cards.card_level,
+                    plain_text_eng: cards.plain_text_eng,
+                    plain_text: cards.plain_text,
+                    expansion: cards.expansion,
+                    illustrator: cards.illustrator,
+                    image_link: cards.image_link,
+                })
+                .from(deckslotTable)
+                .innerJoin(cards, eq(deckslotTable.card_id, cards.id))
+                .innerJoin(deckTable, eq(deckslotTable.deck_id, deckTable.id));
 
             let finalQuery;
             //Requests with userIds are made by authorized users. Therefore, they should be able to find any deck
@@ -56,14 +73,17 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
                         //deckTable.id = deckId is the same as deckslotTable.deck_id = deck_id.
                         eq(deckTable.id, deckId),
                         or(
-                            inArray(deckTable.visibility, ['public', 'unlisted']),
-                            eq(deckTable.creator_id, userId ?? "")
+                            inArray(deckTable.visibility, [
+                                "public",
+                                "unlisted",
+                            ]),
+                            eq(deckTable.creator_id, userId ?? ""),
                             // and(
                             //     eq(deckTable.visibility, 'private'),
                             //     eq(deckTable.creator_id, userId ?? "")
                             // )
-                        )
-                    )
+                        ),
+                    ),
                 );
             } else {
                 //Else, the userId is empty, which means the request is made by a guest. Therefore, they are not allowed
@@ -71,8 +91,8 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
                 finalQuery = query.where(
                     and(
                         eq(deckTable.id, deckId),
-                        inArray(deckTable.visibility, ['public', 'unlisted'])
-                    )
+                        inArray(deckTable.visibility, ["public", "unlisted"]),
+                    ),
                 );
             }
             // const { sql: sqlString, params } = finalQuery.toSQL();
@@ -82,93 +102,109 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
             if (res.length > 0) {
                 const finalRes: IDeckslotFindByDeckIdResponseDto = {
                     deckslots: res,
-                    message: "Deck slots successfully found by deckslot id."
-                }
+                    message: "Deck slots successfully found by deckslot id.",
+                };
                 // console.log("finalRes from findById: ", finalRes)
                 return finalRes as IDeckslotFindByDeckIdResponseDto;
             }
-            return null
+            return null;
         } catch (error) {
-            console.log("error occured while finding deckslots by deck id: ")
-            console.log(error)
+            console.log("error occured while finding deckslots by deck id: ");
+            console.log(error);
             return null;
         }
     }
 
     //Delete a deck slot by its primary composite key of deck_id, card_id, and board.
-    async deleteOneDeckSlot(payload: IDeckslotDeleteRequestDto): Promise<IDeckslotDeleteResponseDto | null> {
+    async deleteOneDeckSlot(
+        payload: IDeckslotDeleteRequestDto,
+    ): Promise<IDeckslotDeleteResponseDto | null> {
         try {
-            const res = await this.db.delete(deckslotTable).where(
-                and(
-                    eq(deckslotTable.deck_id, payload.deck_id),
-                    eq(deckslotTable.card_id, payload.card_id),
-                    eq(deckslotTable.board, payload.board ?? "main")
+            const res = await this.db
+                .delete(deckslotTable)
+                .where(
+                    and(
+                        eq(deckslotTable.deck_id, payload.deck_id),
+                        eq(deckslotTable.card_id, payload.card_id),
+                        eq(deckslotTable.board, payload.board ?? "main"),
+                    ),
                 )
-            ).returning({
-                deck_id: deckslotTable.deck_id,
-                card_id: deckslotTable.card_id,
-                board: deckslotTable.board,
-                message: sql`'Deckslot successfully deleted'`
-            })
-            return res[0] as IDeckslotDeleteResponseDto
+                .returning({
+                    deck_id: deckslotTable.deck_id,
+                    card_id: deckslotTable.card_id,
+                    board: deckslotTable.board,
+                    message: sql`'Deckslot successfully deleted'`,
+                });
+            return res[0] as IDeckslotDeleteResponseDto;
         } catch (error) {
-            console.log("error occured while deleting deckslot: ")
-            console.log(error)
-            return null
+            console.log("error occured while deleting deckslot: ");
+            console.log(error);
+            return null;
         }
     }
     //Find one deckslot by its composite primary key (deck_id, card_id, and board)
-    async findOneDeckSlot(payload: IDeckslotFindRequestDto): Promise<IDeckslotFindResponseDto | null> {
+    async findOneDeckSlot(
+        payload: IDeckslotFindRequestDto,
+    ): Promise<IDeckslotFindResponseDto | null> {
         try {
-            const res = await this.db.select(
-                {
+            const res = await this.db
+                .select({
                     deck_id: deckslotTable.deck_id,
                     card_id: deckslotTable.card_id,
                     board: deckslotTable.board,
                     message: sql`'Deckslot successfully found'`,
-                }
-            ).from(deckslotTable).where(
-                and(
-                    eq(deckslotTable.deck_id, payload.deck_id),
-                    eq(deckslotTable.card_id, payload.card_id),
-                    eq(deckslotTable.board, payload.board ?? "main")
-                )
-            )
-            return res[0] as IDeckslotFindResponseDto
+                })
+                .from(deckslotTable)
+                .where(
+                    and(
+                        eq(deckslotTable.deck_id, payload.deck_id),
+                        eq(deckslotTable.card_id, payload.card_id),
+                        eq(deckslotTable.board, payload.board ?? "main"),
+                    ),
+                );
+            return res[0] as IDeckslotFindResponseDto;
         } catch (error) {
-            console.log("error occured while finding deckslot: ")
-            console.log(error)
-            return null
+            console.log("error occured while finding deckslot: ");
+            console.log(error);
+            return null;
         }
     }
     //Update the quantity of a deck slot. For example, if changeValue is n, then set quantity as `quantity + n`
-    async updateQuantity(payload: IDeckslotUpdateQuantityRequestDto): Promise<IDeckslotUpdateQuantityResponseDto | null> {
+    async updateQuantity(
+        payload: IDeckslotUpdateQuantityRequestDto,
+    ): Promise<IDeckslotUpdateQuantityResponseDto | null> {
         try {
-            const resp = await this.db.update(deckslotTable).set({
-                quantity: sql`${deckslotTable.quantity} + ${payload.changeValue}`,
-                updated_at: sql`now()`
-            }).where(
-                and(
-                    eq(deckslotTable.deck_id, payload.deck_id),
-                    eq(deckslotTable.card_id, payload.card_id),
-                    eq(deckslotTable.board, payload.board ?? "main")
+            const resp = await this.db
+                .update(deckslotTable)
+                .set({
+                    quantity: sql`${deckslotTable.quantity} + ${payload.changeValue}`,
+                    updated_at: sql`now()`,
+                })
+                .where(
+                    and(
+                        eq(deckslotTable.deck_id, payload.deck_id),
+                        eq(deckslotTable.card_id, payload.card_id),
+                        eq(deckslotTable.board, payload.board ?? "main"),
+                    ),
                 )
-            ).returning({
-                deck_id: deckslotTable.deck_id,
-                card_id: deckslotTable.card_id,
-                board: deckslotTable.board,
-                quantity: deckslotTable.quantity,
-                message: sql`'deckslot successfully updated'`
-            })
-            return resp[0] as IDeckslotUpdateQuantityResponseDto
+                .returning({
+                    deck_id: deckslotTable.deck_id,
+                    card_id: deckslotTable.card_id,
+                    board: deckslotTable.board,
+                    quantity: deckslotTable.quantity,
+                    message: sql`'deckslot successfully updated'`,
+                });
+            return resp[0] as IDeckslotUpdateQuantityResponseDto;
         } catch (error) {
-            console.log("error occured while updating quantity: ")
-            console.log(error)
-            return null
+            console.log("error occured while updating quantity: ");
+            console.log(error);
+            return null;
         }
     }
     //Create a deckslot. Deck slots have a composite primary key made of deck_id, card_id, and board.
-    async createDeckSlot(payload: IDeckslotCreateRequestDto): Promise<IDeckslotCreateResponseDto | null>{
+    async createDeckSlot(
+        payload: IDeckslotCreateRequestDto,
+    ): Promise<IDeckslotCreateResponseDto | null> {
         // @IsNotEmpty()
         // @IsUUID()
         // deck_id: string;
@@ -182,20 +218,23 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity>{
             const insertValues = {
                 deck_id: payload.deck_id,
                 card_id: payload.card_id,
-                board: payload.board ?? "main"
-            }
-            const res = await this.db.insert(deckslotTable).values(insertValues).returning({
-                deck_id: deckslotTable.deck_id,
-                card_id: deckslotTable.card_id,
-                quantity: deckslotTable.quantity,
-                board: deckslotTable.board,
-                message: sql`'deckslot successfully created'`
-            })
+                board: payload.board ?? "main",
+            };
+            const res = await this.db
+                .insert(deckslotTable)
+                .values(insertValues)
+                .returning({
+                    deck_id: deckslotTable.deck_id,
+                    card_id: deckslotTable.card_id,
+                    quantity: deckslotTable.quantity,
+                    board: deckslotTable.board,
+                    message: sql`'deckslot successfully created'`,
+                });
             return res[0] as IDeckslotCreateResponseDto;
         } catch (error) {
-            console.log("error occured while creating deckslot: ")
-            console.log(error)
-            return null
+            console.log("error occured while creating deckslot: ");
+            console.log(error);
+            return null;
         }
     }
 }

@@ -1,4 +1,10 @@
-import { ArrayMinSize, IsArray, IsIn, IsOptional, IsString } from "class-validator";
+import {
+    ArrayMinSize,
+    IsArray,
+    IsIn,
+    IsOptional,
+    IsString,
+} from "class-validator";
 import { DeckEntity } from "../../deck.entity";
 import { deckTable } from "../../../supabase/migrations/schema";
 export class IDeckFindCustomRequestDto {
@@ -10,18 +16,22 @@ export class IDeckFindCustomRequestDto {
     @IsOptional()
     @IsString()
     name: string;
-	@IsOptional()
+    @IsOptional()
     @IsString()
     creator: string;
     @IsOptional()
-	@IsIn(['asc', 'desc'], { message: 'orderByName must be either asc or desc' })
-	nameOrderDirection: 'asc' | 'desc';
-	@IsOptional()
-	@IsIn(['asc', 'desc'], { message: 'orderByUpdatedAt must be either asc or desc' })
-	updatedAtOrderDirection: 'asc' | 'desc';
+    @IsIn(["asc", "desc"], {
+        message: "orderByName must be either asc or desc",
+    })
+    nameOrderDirection: "asc" | "desc";
+    @IsOptional()
+    @IsIn(["asc", "desc"], {
+        message: "orderByUpdatedAt must be either asc or desc",
+    })
+    updatedAtOrderDirection: "asc" | "desc";
 }
 
 export interface IDeckFindCustomResponseDto {
-    decks: DeckEntity[]
+    decks: DeckEntity[];
     message: string;
 }

@@ -10,7 +10,9 @@ export class CardFindUsecase {
         private cardRepository: CardRepository,
         private report: Report,
     ) {}
-    public async execute(payload: ICardFindRequestDto): Promise<ICardFindResponseDto | AppError> {
+    public async execute(
+        payload: ICardFindRequestDto,
+    ): Promise<ICardFindResponseDto | AppError> {
         const res: CardEntity[] = await this.cardRepository.customFind(payload);
         if (!res) {
             const error = this.report.error(
@@ -22,7 +24,7 @@ export class CardFindUsecase {
         }
         return {
             cards: res,
-            message: "Card successfully found."
-        }
+            message: "Card successfully found.",
+        };
     }
 }
