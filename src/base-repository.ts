@@ -76,7 +76,14 @@ export class BaseRepository<T extends IEntity> implements IBaseRepository<T> {
             const finalQuery = this.db.execute(query)
             // console.log(finalQuery)
             const res = await finalQuery
-            return res.rows[0] as T;
+            const updatedRow = res.rows[0] as T;
+            if (updatedRow && (updatedRow as any).updated_at) {
+                (updatedRow as any).updated_at = new Date((updatedRow as any).updated_at).toISOString();
+            }
+            if (updatedRow && (updatedRow as any).created_at) {
+                (updatedRow as any).created_at = new Date((updatedRow as any).created_at).toISOString();
+            }
+            return updatedRow as T;
         } catch (error) {
             console.log("error occured while updating: ")
             console.log(error)

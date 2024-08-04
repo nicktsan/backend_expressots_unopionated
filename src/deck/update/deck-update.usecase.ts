@@ -24,6 +24,7 @@ export class DeckUpdateUsecase {
                 throw error;
             }
             const res: DeckEntity | null = await this.deckRepository.update(payload, true)
+            // console.log(res)
             if (!res) {
                 const error = this.report.error(
                     "Failed to update deck.",

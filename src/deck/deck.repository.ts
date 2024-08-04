@@ -57,7 +57,7 @@ export class DeckRepository extends BaseRepository<DeckEntity>{
                 deck.id,
                 deck.name,
                 deck.creator_id,
-                "user".username,
+                "user".username AS creator_username,
                 cards.image_link,
                 deck.description,
                 deck.views,
