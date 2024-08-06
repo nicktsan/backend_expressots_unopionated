@@ -29,10 +29,10 @@ export class DeckFindController extends BaseController {
         @query() reqQuery: IDeckFindRequestDto,
         @headers("userid") userId: string,
     ): Promise<void> {
-        //console.log("reqQuery")
-        //console.log(reqQuery)
-        //console.log("userId")
-        //console.log(userId)
+        // console.log("reqQuery")
+        // console.log(reqQuery)
+        // console.log("userId")
+        // console.log(userId)
         return this.callUseCase(
             await this.deckFindUsecase.execute(reqQuery, userId),
             res,

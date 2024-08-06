@@ -6,6 +6,7 @@ import { DeckFindController } from "./find/deck-find.controller";
 import { DeckUpdateController } from "./update/deck-update.controller";
 import { DeckDeleteController } from "./delete/deck-delete.controller";
 import { DeckFindCustomController } from "./find/custom/deck-find-custom.controller";
+import { DeckUpdateIncrementviewController } from "./update/incrementview/deck-update-incrementview.controller";
 
 export const DeckModule: ContainerModule = CreateModule([
     DeckCreateController,
@@ -14,4 +15,5 @@ export const DeckModule: ContainerModule = CreateModule([
     DeckFindCustomController,
     DeckUpdateController,
     DeckDeleteController,
+    DeckUpdateIncrementviewController,
 ]);
