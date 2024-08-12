@@ -12,6 +12,7 @@ export interface IDeckFindResponseDto {
     creator_username: string;
     banner_url: string | null;
     description: string | null;
+    visibility: string;
     views: number;
     updated_at: Date | null;
     years: number;
