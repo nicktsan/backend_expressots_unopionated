@@ -15,5 +15,8 @@ export const ENV = {
     SUPABASE: {
         SUPABASE_URL: String(process.env.SUPABASE_URL),
         SUPABASE_PUBLIC_ANON_KEY: String(process.env.SUPABASE_PUBLIC_ANON_KEY),
+        SUPABASE_STORAGE: String(process.env.SUPABASE_STORAGE),
+        SUPABASE_STORAGE_PROJECT_ID: String(process.env.SUPABASE_STORAGE_PROJECT_ID),
+        SUPABASE_STORAGE_BUCKET: String(process.env.SUPABASE_STORAGE_BUCKET),
     },
 };

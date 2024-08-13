@@ -27,6 +27,7 @@ export interface IDeckslotFindResponseDto {
     name_kr?: string;
     code?: string;
     rarity?: string;
+    // rarity_abb?: string;
     card_type?: string;
     color?: string;
     card_level?: number | null;
@@ -35,4 +36,5 @@ export interface IDeckslotFindResponseDto {
     expansion?: string | null;
     illustrator?: string;
     image_link?: string;
+    image_link_en?: string;
 }

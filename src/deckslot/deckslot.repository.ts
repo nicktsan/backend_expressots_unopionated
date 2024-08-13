@@ -21,6 +21,7 @@ import {
     IDeckslotDeleteRequestDto,
     IDeckslotDeleteResponseDto,
 } from "./delete/deckslot-delete.dto";
+import { ENV } from "../env";
 
 @provide(DeckSlotRepository)
 export class DeckSlotRepository extends BaseRepository<DeckSlotEntity> {
@@ -47,6 +48,7 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity> {
                     name_kr: cards.name_kr,
                     code: cards.code,
                     rarity: cards.rarity,
+                    // rarity_abb: cards.rarity_abb,
                     card_type: cards.card_type,
                     color: cards.color,
                     card_level: cards.card_level,
@@ -55,6 +57,7 @@ export class DeckSlotRepository extends BaseRepository<DeckSlotEntity> {
                     expansion: cards.expansion,
                     illustrator: cards.illustrator,
                     image_link: cards.image_link,
+                    image_link_en: sql`CONCAT('https://${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_PROJECT_ID)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_BUCKET)}/', ${cards.code}, '.png')`,
                 })
                 .from(deckslotTable)
                 .innerJoin(cards, eq(deckslotTable.card_id, cards.id))
