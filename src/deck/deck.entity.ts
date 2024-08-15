@@ -15,6 +15,12 @@ export class DeckEntity implements IEntity {
     visibility?: string;
     created_at?: Date | null;
     updated_at?: Date | null;
+    years?: number;
+    months?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
     constructor() {
         this.id = uuidv4();
     }

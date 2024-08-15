@@ -323,7 +323,13 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 : sql` ORDER BY ${deckTable.updated_at} desc`;
 
         return sql`
-            SELECT ${sql.join(columns, sql`, `)}
+            SELECT ${sql.join(columns, sql`, `)},
+            EXTRACT(year FROM age(NOW(), deck.updated_at)) AS years,
+            EXTRACT(month FROM age(NOW(), deck.updated_at)) AS months,
+            EXTRACT(day FROM age(NOW(), deck.updated_at)) AS days,
+            EXTRACT(hour FROM age(NOW(), deck.updated_at)) AS hours,
+            EXTRACT(minute FROM age(NOW(), deck.updated_at)) AS minutes,
+            EXTRACT(second FROM age(NOW(), deck.updated_at)) AS seconds
             FROM ${deckTable}
             INNER JOIN ${userTable} ON ${deckTable.creator_id} = ${userTable.id}
             ${whereClause}
@@ -337,12 +343,24 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
         try {
             const query = this.buildCardQuery(payload);
 
-            const pgDialect = new PgDialect();
+            // const pgDialect = new PgDialect();
             // console.log(pgDialect.sqlToQuery(query));
 
             const results = await this.db.execute(query);
             // console.log(results.rows[0]);
-            return results.rows as DeckEntity[];
+            // Convert time-related fields to numbers
+            const processedResults = results.rows.map((row) => ({
+                ...row,
+                years: Number(row.years),
+                months: Number(row.months),
+                days: Number(row.days),
+                hours: Number(row.hours),
+                minutes: Number(row.minutes),
+                seconds: Number(row.seconds),
+            }));
+
+            return processedResults as DeckEntity[];
+            // return results.rows as DeckEntity[];
         } catch (error) {
             console.error("Error executing query:", error);
             throw error;
