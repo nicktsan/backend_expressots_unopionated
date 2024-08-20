@@ -57,16 +57,18 @@ export class CardRepository extends BaseRepository<CardEntity> {
         // : [sql.raw('*')];
 
         // Build WHERE conditions
+        // console.log("payload.name")
+        // console.log(payload.name)
         if (payload.name && typeof payload.name === "string") {
             conditions.push(sql`(
-            ${like(cards.name_eng_lower, `%${this.sanitizeInput(payload.name.toLowerCase())}%`)}
-            OR ${like(cards.name_kr, `%${this.sanitizeInput(payload.name)}%`)}
+            ${like(cards.name_eng_lower, `%${payload.name.toLowerCase()}%`)}
+            OR ${like(cards.name_kr, `%${payload.name}%`)}
             )`);
         }
 
         if (payload.code && typeof payload.code === "string") {
             conditions.push(
-                like(cards.code, `%${this.sanitizeInput(payload.code)}%`),
+                like(cards.code, `%${payload.code}%`),
             );
         }
 
@@ -107,7 +109,7 @@ export class CardRepository extends BaseRepository<CardEntity> {
             conditions.push(
                 like(
                     cards.plain_text_eng,
-                    `%${this.sanitizeInput(payload.plain_text_eng)}%`,
+                    `%${payload.plain_text_eng}%`,
                 ),
             );
         }
@@ -116,7 +118,7 @@ export class CardRepository extends BaseRepository<CardEntity> {
             conditions.push(
                 like(
                     cards.plain_text,
-                    `%${this.sanitizeInput(payload.plain_text)}%`,
+                    `%${payload.plain_text}%`,
                 ),
             );
         }
