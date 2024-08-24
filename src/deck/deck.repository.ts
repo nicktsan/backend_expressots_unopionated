@@ -5,9 +5,13 @@ import { DeckEntity } from "./deck.entity";
 import { BaseRepository } from "../base-repository";
 import { deckTable, userTable, cards } from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
-import { IDeckFindResponseDto } from "./find/deck-find.dto";
+import {
+    IDeckFindResponseDto,
+    ISimpleDeckFindResponseDto,
+} from "./find/deck-find.dto";
 import { IDeckFindCustomRequestDto } from "./find/custom/deck-find-custom.dto";
 import { PgColumn, PgDialect } from "drizzle-orm/pg-core";
+import { ENV } from "../env";
 
 @provide(DeckRepository)
 export class DeckRepository extends BaseRepository<DeckEntity> {
@@ -57,11 +61,44 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
         }
     }
 
-    //This function selects a deck that is either public, unlisted, or is created by the user.
-    //If the user is just a guest, they will only be able to select a public or unlisted deck.
+    //This function selects a deck that matches the supplied id and only grabs creator_id and visibility.
+    async simpleFindById(
+        id: string,
+        // userId: string,
+    ): Promise<ISimpleDeckFindResponseDto | null> {
+        try {
+            const selectSql: SQL = sql`
+                SELECT 
+                deck.creator_id,
+                deck.visibility
+                FROM deck
+                WHERE deck.id = ${id}
+            `;
+            const finalQuery: SQL = sql`${selectSql}`;
+            // const pgDialect = new PgDialect();
+            // console.log(pgDialect.sqlToQuery(finalQuery));
+            const res = await this.db.execute(finalQuery);
+            // console.log(res.rows);
+            if (res.rows.length > 0) {
+                const finalRes: ISimpleDeckFindResponseDto = {
+                    creator_id: res.rows[0].creator_id,
+                    visibility: res.rows[0].visibility,
+                };
+                // console.log("finalRes from findById: ", finalRes)
+                return finalRes as ISimpleDeckFindResponseDto;
+            }
+            return null;
+        } catch (error) {
+            console.log(`error occured while checking if deck ${id} exists.`);
+            console.log(error);
+            throw error;
+        }
+    }
+
+    //This function selects a deck that matches the supplied id.
     async findById(
         id: string,
-        userId: string,
+        // userId: string,
     ): Promise<IDeckFindResponseDto | null> {
         try {
             const selectSql: SQL = sql`
@@ -74,6 +111,9 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 deck.description,
                 deck.views,
                 deck.visibility,
+                deck.banner,
+                cards.image_link AS kr_banner_url,
+                CONCAT('https://${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_PROJECT_ID)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_BUCKET)}/', ${cards.code}, '.png') AS en_banner_url,
                 ${this.formatDateTime(deckTable.updated_at)} AS updated_at,
                 EXTRACT(year FROM age(NOW(), deck.updated_at)) AS years,
                 EXTRACT(month FROM age(NOW(), deck.updated_at)) AS months,
@@ -86,19 +126,20 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 LEFT JOIN cards ON deck.banner = cards.id
                 WHERE deck.id = ${id}
             `;
-            let whereSql: SQL = sql`
-                AND deck.visibility IN ('public', 'unlisted');
-            `;
-            if (userId) {
-                whereSql = sql`
-                    AND (
-                    deck.visibility IN ('public', 'unlisted')
-                    or
-                    deck.creator_id = ${userId}
-                    )
-                `;
-            }
-            const finalQuery: SQL = sql`${selectSql} ${whereSql}`;
+            // let whereSql: SQL = sql`
+            //     AND deck.visibility IN ('public', 'unlisted');
+            // `;
+            // if (userId) {
+            //     whereSql = sql`
+            //         AND (
+            //         deck.visibility IN ('public', 'unlisted')
+            //         or
+            //         deck.creator_id = ${userId}
+            //         )
+            //     `;
+            // }
+            // const finalQuery: SQL = sql`${selectSql} ${whereSql}`;
+            const finalQuery: SQL = sql`${selectSql}`;
             // const pgDialect = new PgDialect();
             // console.log(pgDialect.sqlToQuery(finalQuery));
             const res = await this.db.execute(finalQuery);
@@ -109,7 +150,9 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                     name: res.rows[0].name,
                     creator_id: res.rows[0].creator_id,
                     creator_username: res.rows[0].creator_username,
-                    banner_url: res.rows[0].banner_url,
+                    banner: res.rows[0].banner,
+                    kr_banner_url: res.rows[0].kr_banner_url,
+                    en_banner_url: res.rows[0].en_banner_url,
                     description: res.rows[0].description,
                     visibility: res.rows[0].visibility,
                     views: res.rows[0].views,
@@ -127,9 +170,9 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             }
             return null;
         } catch (error) {
-            console.log("error occured while finding specific deck: ");
+            console.log(`error occured while finding deck ${id}: `);
             console.log(error);
-            return null;
+            throw error;
         }
     }
 

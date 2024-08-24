@@ -67,9 +67,7 @@ export class CardRepository extends BaseRepository<CardEntity> {
         }
 
         if (payload.code && typeof payload.code === "string") {
-            conditions.push(
-                like(cards.code, `%${payload.code}%`),
-            );
+            conditions.push(like(cards.code, `%${payload.code}%`));
         }
 
         if (Array.isArray(payload.rarity) && payload.rarity.length > 0) {
@@ -107,20 +105,12 @@ export class CardRepository extends BaseRepository<CardEntity> {
             typeof payload.plain_text_eng === "string"
         ) {
             conditions.push(
-                like(
-                    cards.plain_text_eng,
-                    `%${payload.plain_text_eng}%`,
-                ),
+                like(cards.plain_text_eng, `%${payload.plain_text_eng}%`),
             );
         }
 
         if (payload.plain_text && typeof payload.plain_text === "string") {
-            conditions.push(
-                like(
-                    cards.plain_text,
-                    `%${payload.plain_text}%`,
-                ),
-            );
+            conditions.push(like(cards.plain_text, `%${payload.plain_text}%`));
         }
 
         if (Array.isArray(payload.expansion) && payload.expansion.length > 0) {

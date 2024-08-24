@@ -5,12 +5,19 @@ export class IDeckFindRequestDto {
     id: string;
 }
 
+export interface ISimpleDeckFindResponseDto {
+    creator_id: string;
+    visibility: "public" | "private" | "unlisted";
+}
+
 export interface IDeckFindResponseDto {
     id: string;
     name: string;
     creator_id: string;
     creator_username: string;
-    banner_url: string | null;
+    banner: number | null;
+    kr_banner_url: string | null;
+    en_banner_url: string | null;
     description: string | null;
     visibility: string;
     views: number;
