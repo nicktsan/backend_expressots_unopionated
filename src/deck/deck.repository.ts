@@ -280,6 +280,8 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             "visibility",
         ];
         const allowedUserColumns: (keyof typeof userTable)[] = ["username"];
+        const allowedCardsColumns: (keyof typeof cards)[] = ["image_link"];
+        //todo implement selecting cards.image_link
 
         // Dynamic column selection with type-safe check
         const columns =
@@ -306,6 +308,12 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                                   )
                               ) {
                                   return sql`"user".${sql.raw(col as string)}`; //user needs to be surrounded in double quotes as user is also a special word in postgres
+                              } else if (
+                                  allowedCardsColumns.includes(
+                                      col as keyof typeof cards,
+                                  )
+                              ) {
+                                  return sql`"cards".${sql.raw(col as string)}`;
                               }
                               return null; // or handle unexpected columns as needed
                           })
@@ -374,6 +382,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             EXTRACT(minute FROM age(NOW(), deck.updated_at)) AS minutes,
             EXTRACT(second FROM age(NOW(), deck.updated_at)) AS seconds
             FROM ${deckTable}
+            LEFT JOIN ${cards} ON ${deckTable.banner} = ${cards.id}
             INNER JOIN ${userTable} ON ${deckTable.creator_id} = ${userTable.id}
             ${whereClause}
             ${finalOrderClause}
