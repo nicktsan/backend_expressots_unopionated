@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 @provide(DeckEntity)
 export class DeckEntity implements IEntity {
     id: string;
+    unique_colors?: string[] | null; //This field comes from cards. Other fields come from deckTable
     name?: string;
     creator_id?: string;
     username?: string; //This field comes from userTable. Other fields come from deckTable

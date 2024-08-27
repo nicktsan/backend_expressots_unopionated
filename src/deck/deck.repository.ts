@@ -3,7 +3,7 @@ import { provide } from "inversify-binding-decorators";
 import { SQL, asc, desc, eq, and, or, inArray, sql, like } from "drizzle-orm";
 import { DeckEntity } from "./deck.entity";
 import { BaseRepository } from "../base-repository";
-import { deckTable, userTable, cards } from "../supabase/migrations/schema";
+import { deckTable, userTable, cards, deckslotTable } from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
 import {
     IDeckFindResponseDto,
@@ -281,13 +281,13 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
         ];
         const allowedUserColumns: (keyof typeof userTable)[] = ["username"];
         const allowedCardsColumns: (keyof typeof cards)[] = ["image_link"];
-        //todo implement selecting cards.image_link
 
         // Dynamic column selection with type-safe check
         const columns =
             payload.select && payload.select.length > 0
                 ? [
                       sql`deck.id`, // auto include id in the search
+                      sql`dc.unique_colors`, //auto include distinct colors in the search
                       ...payload.select
                           .map((col) => {
                               if (
@@ -374,6 +374,12 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 : sql` ORDER BY ${deckTable.updated_at} desc`;
 
         return sql`
+            WITH deck_colors AS
+            (SELECT DISTINCT ON (${deckslotTable.deck_id}) deck_id,
+            array_agg(DISTINCT LOWER(${cards.color})) AS unique_colors
+            FROM ${deckslotTable}
+            JOIN ${cards} ON ${deckslotTable.card_id} = ${cards.id}
+            GROUP BY ${deckslotTable.deck_id})
             SELECT ${sql.join(columns, sql`, `)},
             EXTRACT(year FROM age(NOW(), deck.updated_at)) AS years,
             EXTRACT(month FROM age(NOW(), deck.updated_at)) AS months,
@@ -384,6 +390,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             FROM ${deckTable}
             LEFT JOIN ${cards} ON ${deckTable.banner} = ${cards.id}
             INNER JOIN ${userTable} ON ${deckTable.creator_id} = ${userTable.id}
+            LEFT JOIN deck_colors dc ON ${deckTable.id} = dc.deck_id
             ${whereClause}
             ${finalOrderClause}
         `;
@@ -412,7 +419,6 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             }));
 
             return processedResults as DeckEntity[];
-            // return results.rows as DeckEntity[];
         } catch (error) {
             console.error("Error executing query:", error);
             throw error;
