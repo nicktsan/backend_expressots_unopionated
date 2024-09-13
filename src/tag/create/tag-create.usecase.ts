@@ -36,11 +36,10 @@ export class TagCreateUsecase {
                 );
             }
             //removes all whitespace, special characters, and converts to lowercase
-            const nameLower = payload.name.toLowerCase().replace(/\W/g, '');
-            this.newTag.name = nameLower;
+            this.newTag.name = payload.name;
 
             let tagExists: TagEntity | null=
-                await this.tagRepository.findByNameLower(nameLower);
+                await this.tagRepository.checkByNameLower(payload.name);
             let globalTagMessage: string = " Tag already exists globally.";
             if (!tagExists){
                 const globalTagRes: TagEntity | null = await this.tagRepository.create(
@@ -57,9 +56,9 @@ export class TagCreateUsecase {
                 tagExists = globalTagRes;
                 globalTagMessage = "";
             }
-            const deckTagExists: DeckTagEntity[] | null = await this.deckTagRepository.findDeckTagByDeckId({
+            const deckTagExists: DeckTagEntity[] | null = await this.deckTagRepository.checkDeckTagExists({
                 deck_id: payload.deck_id,
-                name: nameLower,
+                name: payload.name,
             });
             if (deckTagExists && deckTagExists.length > 0) {
                 throw this.report.error(

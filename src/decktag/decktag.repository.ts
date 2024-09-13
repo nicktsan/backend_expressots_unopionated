@@ -13,7 +13,7 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
         this.table = deckTagsTable;
     }
 
-    async findDeckTagByDeckId(payload: ITagCreateRequestDto): Promise<DeckTagEntity[] | null> {
+    async checkDeckTagExists(payload: ITagCreateRequestDto): Promise<DeckTagEntity[] | null> {
         try {
             const res = await this.db
                 .select({
@@ -29,6 +29,25 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
                         eq(tagsTable.name, payload.name),
                     ),
                 );
+            return res;
+        } catch (error) {
+            console.log("error occured while finding deck tag by deck id: ");
+            console.log(error);
+            return null;
+        }
+    }
+
+    async findDeckTagsByDeckId(payload: ITagCreateRequestDto): Promise<DeckTagEntity[] | null> {
+        try {
+            const res = await this.db
+                .select({
+                    id: deckTagsTable.id,
+                    deck_id: deckTagsTable.deck_id,
+                    tag_id: deckTagsTable.tag_id
+                })
+                .from(deckTagsTable)
+                .innerJoin(tagsTable, eq(deckTagsTable.tag_id, tagsTable.id))
+                .where(eq(deckTagsTable.deck_id, payload.deck_id));
             return res;
         } catch (error) {
             console.log("error occured while finding deck tag by deck id: ");

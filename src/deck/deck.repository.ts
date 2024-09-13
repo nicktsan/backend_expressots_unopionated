@@ -235,7 +235,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
         }
     }
 
-    async findByNameLower(name: string): Promise<boolean> {
+    async checkByNameLower(name: string): Promise<boolean> {
         try {
             const res = await this.db
                 .select({
@@ -244,7 +244,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 })
                 .from(deckTable)
                 .where(eq(deckTable.name_lower, name.toLowerCase()));
-            // console.log("res from findByNameLower: ", res)
+            // console.log("res from checkByNameLower: ", res)
             if (res.length > 0) {
                 return true;
             }

@@ -26,7 +26,7 @@ export class DeckCreateUsecase {
             this.newDeck.visibility = payload.visibility;
 
             const deckExists: boolean =
-                await this.deckRepository.findByNameLower(payload.name);
+                await this.deckRepository.checkByNameLower(payload.name);
             if (deckExists) {
                 throw this.report.error(
                     "Deck name is already taken",
