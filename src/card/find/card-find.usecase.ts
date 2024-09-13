@@ -15,12 +15,11 @@ export class CardFindUsecase {
     ): Promise<ICardFindResponseDto | AppError> {
         const res: CardEntity[] = await this.cardRepository.customFind(payload);
         if (!res) {
-            const error = this.report.error(
+            throw this.report.error(
                 "cards not found",
                 StatusCode.NotFound,
                 "cards not found",
             );
-            throw error;
         }
         return {
             cards: res,

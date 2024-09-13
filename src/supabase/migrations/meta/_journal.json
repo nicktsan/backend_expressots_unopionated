@@ -57,6 +57,27 @@
       "when": 1720993375972,
       "tag": "0009_purple_onslaught",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1724798719877,
+      "tag": "0010_aspiring_spot",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1726252702627,
+      "tag": "0011_loving_ares",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1726256083501,
+      "tag": "0012_mature_ultimates",
+      "breakpoints": true
     }
   ]
 }

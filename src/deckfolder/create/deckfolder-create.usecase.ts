@@ -20,7 +20,7 @@
 //         const userExists = await this.deckFolderRepository.create(email, password_hash);
 
 //         if (!userExists) {
-//             const error = this.report.error(
+//             throw this.report.error(
 //                 "User not found",
 //                 StatusCode.NotFound,
 //                 "user-find-usecase",

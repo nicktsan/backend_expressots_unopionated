@@ -27,23 +27,23 @@ export class DeckslotUpdateQuantityUsecase {
             const isDeckCreator: Record<string, string> | null =
                 await this.deckRepository.checkCreator(payload.deck_id, userId);
             if (!isDeckCreator) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                throw error;
+                
             }
 
             const res: IDeckslotUpdateQuantityResponseDto | null =
                 await this.deckSlotRepository.updateQuantity(payload);
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Failed to update deckslot quantity.",
                     StatusCode.NotFound,
                     "Failed to update deckslot quantity.",
                 );
-                throw error;
+                
             }
 
             //check if quantity is less than 1. If it is, delete the record.
@@ -58,12 +58,12 @@ export class DeckslotUpdateQuantityUsecase {
                         deletePayload,
                     );
                 if (!deleteRes) {
-                    const error = this.report.error(
+                    throw this.report.error(
                         "Failed to delete deckslot.",
                         StatusCode.BadRequest,
                         "Failed to delete deckslot.",
                     );
-                    throw error;
+                    
                 }
                 res.message =
                     "Deckslot deleted due to quantity falling below 1.";

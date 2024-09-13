@@ -18,22 +18,20 @@ export class DeckDeleteUsecase {
             const isDeckCreator: Record<string, string> | null =
                 await this.deckRepository.checkCreator(id, userId);
             if (!isDeckCreator) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                throw error;
             }
 
             const res: boolean = await this.deckRepository.delete(id);
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Failed to delete deck.",
                     StatusCode.BadRequest,
                     "Failed to delete deck.",
                 );
-                throw error;
             }
             return {
                 isDeleted: res,

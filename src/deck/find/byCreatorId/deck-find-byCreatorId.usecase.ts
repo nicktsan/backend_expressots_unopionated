@@ -42,20 +42,18 @@ export class DeckFindByCreatorIdUsecase {
             const res: DeckEntity[] | null =
                 await this.deckRepository.findByCreatorId(payload, userId);
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User's decks not found",
                     StatusCode.NotFound,
                     "deck-find-mine.usecase",
                 );
-                throw error;
             }
             if (res.length < 1) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User has no public decks",
                     StatusCode.NotFound,
                     "deck-find-mine.usecase",
                 );
-                throw error;
             }
             return {
                 decks: res,

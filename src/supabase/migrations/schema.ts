@@ -153,7 +153,7 @@ export const deckTable = pgTable(
     "deck",
     {
         id: uuid("id").primaryKey().notNull(),
-        name: text("name").unique().notNull(),
+        name: text("name").notNull(),
         creator_id: uuid("creator_id")
             .notNull()
             .references(() => userTable.id, { onDelete: "cascade" }),
@@ -210,6 +210,48 @@ export const deckslotTable = pgTable(
                 name: "deckslot_primarykey",
                 columns: [table.deck_id, table.card_id, table.board],
             }),
+        };
+    },
+);
+
+export const tagsTable = pgTable(
+    "tags",
+    {
+        id: uuid("id")
+            .notNull(),
+        name: text("name")
+            .unique()
+            .notNull(), //Add minimum length 3 constraint in sql
+    },
+    (table) => {
+        return {
+            pk: primaryKey({
+                name: "tags_primarykey",
+                columns: [table.id],
+            }),
+        };
+    },
+);
+
+export const deckTagsTable = pgTable(
+    "decktags",
+    {
+        id: uuid("id")
+            .notNull(),
+        deck_id: uuid("deck_id")
+            .notNull()
+            .references(() => deckTable.id, { onDelete: "cascade" }),
+        tag_id: uuid("tag_id")
+            .notNull()
+            .references(() => tagsTable.id, { onDelete: "cascade" }),
+    },
+    (table) => {
+        return {
+            pk: primaryKey({
+                name: "decktags_primarykey",
+                columns: [table.id],
+            }),
+            unq: unique().on(table.deck_id, table.tag_id),
         };
     },
 );

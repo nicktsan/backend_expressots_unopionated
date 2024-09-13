@@ -24,20 +24,18 @@ export class DeckFindCustomUsecase {
             const res: DeckEntity[] | null =
                 await this.deckRepository.customFind(payload);
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Error while finding decks",
                     StatusCode.NotFound,
                     "deck-find-custom.usecase error",
                 );
-                throw error;
             }
             if (res.length < 1) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Decks not found",
                     StatusCode.NotFound,
                     "deck-find-custom.usecase not found",
                 );
-                throw error;
             }
             return {
                 decks: res,

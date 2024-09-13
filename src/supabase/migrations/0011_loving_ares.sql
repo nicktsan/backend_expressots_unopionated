@@ -1,0 +1,1 @@
+ALTER TABLE "decktags" ADD CONSTRAINT "decktags_id_tag_id_unique" UNIQUE("id","tag_id");

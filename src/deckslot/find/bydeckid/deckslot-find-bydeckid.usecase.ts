@@ -19,12 +19,12 @@ export class DeckslotFindBydeckidUsecase {
         const res: IDeckslotFindByDeckIdResponseDto | null =
             await this.deckSlotrepository.findByDeckId(payload.deck_id, userId);
         if (!res) {
-            const error = this.report.error(
+            throw this.report.error(
                 "deck slots not found by id",
                 StatusCode.NotFound,
                 "deck slots not found by id",
             );
-            throw error;
+            
         }
 
         // console.log("res in deck-find.usecase(execute): ")

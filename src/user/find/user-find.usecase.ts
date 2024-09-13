@@ -14,12 +14,12 @@ export class UserFindUseCase {
         const userExists = await this.userRepository.findByEmail(email);
 
         if (!userExists) {
-            const error = this.report.error(
+            throw this.report.error(
                 "User not found",
                 StatusCode.NotFound,
                 "user-find-usecase",
             );
-            throw error;
+            
         }
 
         return {

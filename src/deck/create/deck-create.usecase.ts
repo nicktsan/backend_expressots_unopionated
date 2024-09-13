@@ -28,24 +28,24 @@ export class DeckCreateUsecase {
             const deckExists: boolean =
                 await this.deckRepository.findByNameLower(payload.name);
             if (deckExists) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Deck name is already taken",
                     StatusCode.BadRequest,
                     "Deck name is already taken",
                 );
-                throw error;
+                
             }
 
             const res: DeckEntity | null = await this.deckRepository.create(
                 this.newDeck,
             );
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Failed to create deck.",
                     StatusCode.BadRequest,
                     "Failed to create deck.",
                 );
-                throw error;
+                
             }
             return {
                 id: res.id,

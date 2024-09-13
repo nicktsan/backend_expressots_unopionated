@@ -21,23 +21,22 @@ export class DeckUpdateIncrementviewUsecase {
         const doesDeckExist: ISimpleDeckFindResponseDto | null =
             await this.deckRepository.simpleFindById(payload.id);
         if (!doesDeckExist) {
-            const error = this.report.error(
+            throw this.report.error(
                 `Deck ${payload.id} not found`,
                 StatusCode.NotFound,
-                `Deck ${payload.id} not found`,
+                `DeckUpdateIncrementviewUsecase`,
             );
-            throw error;
+            // throw error;
         }
         if (
             doesDeckExist.creator_id !== userId &&
             doesDeckExist.visibility.toLowerCase() === "private"
         ) {
-            const error = this.report.error(
+            throw this.report.error(
                 `User is not authorized to access deck ${payload.id}`,
                 StatusCode.BadRequest,
-                `User is not authorized to access deck ${payload.id}`,
+                `DeckUpdateIncrementviewUsecase`,
             );
-            throw error;
         }
         const res: DeckEntity | null =
             await this.deckRepository.incrementDeckView(payload.id);
@@ -45,12 +44,11 @@ export class DeckUpdateIncrementviewUsecase {
         // console.log(res)
 
         if (!res) {
-            const error = this.report.error(
+            throw this.report.error(
                 "Deck views failed to increment",
-                StatusCode.BadRequest,
-                "Deck views failed to increment",
+                StatusCode.InternalServerError,
+                `DeckUpdateIncrementviewUsecase`,
             );
-            throw error;
         }
         return {
             id: res.id,

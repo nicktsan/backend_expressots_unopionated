@@ -23,12 +23,11 @@ export class DeckUpdateUsecase {
             const isDeckCreator: Record<string, string> | null =
                 await this.deckRepository.checkCreator(payload.id, userId);
             if (!isDeckCreator) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                throw error;
             }
             const res: DeckEntity | null = await this.deckRepository.update(
                 payload,
@@ -36,12 +35,11 @@ export class DeckUpdateUsecase {
             );
             // console.log(res)
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Failed to update deck.",
                     StatusCode.NotFound,
                     "Failed to update deck.",
                 );
-                throw error;
             }
             return {
                 deckEntity: res,

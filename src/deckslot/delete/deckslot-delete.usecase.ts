@@ -23,12 +23,12 @@ export class DeckslotDeleteUsecase {
             const isDeckCreator: Record<string, string> | null =
                 await this.deckRepository.checkCreator(payload.deck_id, userId);
             if (!isDeckCreator) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                throw error;
+                
             }
 
             // check if deckslot is already in database.
@@ -41,12 +41,12 @@ export class DeckslotDeleteUsecase {
             const res: IDeckslotDeleteResponseDto | null =
                 await this.deckSlotRepository.deleteOneDeckSlot(payload);
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Failed to delete deckslot.",
                     StatusCode.BadRequest,
                     "Failed to delete deckslot.",
                 );
-                throw error;
+                
             }
             return res;
         } catch (error: any) {

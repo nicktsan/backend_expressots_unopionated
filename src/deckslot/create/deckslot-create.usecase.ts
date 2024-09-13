@@ -33,12 +33,12 @@ export class DeckslotCreateUsecase {
             const isDeckCreator: Record<string, string> | null =
                 await this.deckRepository.checkCreator(payload.deck_id, userId);
             if (!isDeckCreator) {
-                const error = this.report.error(
+                throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                throw error;
+                
             }
 
             // check if deckslot is already in database.
@@ -57,12 +57,12 @@ export class DeckslotCreateUsecase {
                 const updateRes: IDeckslotUpdateQuantityResponseDto | null =
                     await this.deckSlotRepository.updateQuantity(updateRequest);
                 if (!updateRes) {
-                    const error = this.report.error(
+                    throw this.report.error(
                         "Failed to update quantity.",
                         StatusCode.BadRequest,
                         "Failed to update quantity.",
                     );
-                    throw error;
+                    
                 }
                 return updateRes;
             }
@@ -70,12 +70,12 @@ export class DeckslotCreateUsecase {
             const res: IDeckslotCreateResponseDto | null =
                 await this.deckSlotRepository.createDeckSlot(payload);
             if (!res) {
-                const error = this.report.error(
+                throw this.report.error(
                     "Failed to create deckslot.",
                     StatusCode.BadRequest,
                     "Failed to create deckslot.",
                 );
-                throw error;
+                
             }
             return res;
         } catch (error: any) {
