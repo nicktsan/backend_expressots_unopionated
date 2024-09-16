@@ -3,7 +3,7 @@ import { provide } from "inversify-binding-decorators";
 import { SQL, asc, desc, eq, and, or, inArray, sql, like } from "drizzle-orm";
 import { DeckEntity } from "./deck.entity";
 import { BaseRepository } from "../base-repository";
-import { deckTable, userTable, cards, deckslotTable } from "../supabase/migrations/schema";
+import { deckTable, userTable, cards, deckslotTable, deckTagsTable, tagsTable } from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
 import {
     IDeckFindResponseDto,
@@ -288,6 +288,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 ? [
                       sql`deck.id`, // auto include id in the search
                       sql`dc.unique_colors`, //auto include distinct colors in the search
+                      sql`dt.tag_names`, //auto include tag names in the search
                       ...payload.select
                           .map((col) => {
                               if (
@@ -372,14 +373,41 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             orderByClause.length > 0
                 ? sql` ORDER BY ${sql.join(orderByClause, sql`, `)}`
                 : sql` ORDER BY ${deckTable.updated_at} desc`;
+        //todo implement this into the sql later
+        // with deck_tags as (
+        //     SELECT deck.id deck_id,
+        //                 array_agg(tags.name) AS tag_names
+        //                 FROM deck
+        //                 JOIN decktags ON deck.id = decktags.deck_id
+        //                 JOIN tags ON decktags.tag_id = tags.id
+        //                 GROUP BY deck.id),
+        //     deck_colors as (
+        //       SELECT DISTINCT ON (deckslot.deck_id) deck_id,
+        //                 array_agg(DISTINCT LOWER(cards.color)) AS unique_colors
+        //                 FROM deckslot
+        //                 JOIN cards ON deckslot.card_id = cards.id
+        //                 GROUP BY deckslot.deck_id
+        //     )
+        //     select deck.id, dt.deck_id, dt.tag_names, dc.unique_colors from deck
+        //     LEFT JOIN deck_tags dt ON (deck.id = dt.deck_id)
+        //     LEFT JOIN deck_colors dc ON deck.id = dc.deck_id
 
         return sql`
-            WITH deck_colors AS
-            (SELECT DISTINCT ON (${deckslotTable.deck_id}) deck_id,
-            array_agg(DISTINCT LOWER(${cards.color})) AS unique_colors
-            FROM ${deckslotTable}
-            JOIN ${cards} ON ${deckslotTable.card_id} = ${cards.id}
-            GROUP BY ${deckslotTable.deck_id})
+            with deck_tags as (
+                SELECT ${deckTable.id} td_deck_id,
+                array_agg(${tagsTable.name}) AS tag_names
+                FROM ${deckTable}
+                JOIN ${deckTagsTable} ON ${deckTable.id} = ${deckTagsTable.deck_id}
+                JOIN ${tagsTable} ON ${deckTagsTable.tag_id} = ${tagsTable.id}
+                GROUP BY ${deckTable.id}
+            ),
+            deck_colors AS (
+                SELECT DISTINCT ON (${deckslotTable.deck_id}) deck_id,
+                array_agg(DISTINCT LOWER(${cards.color})) AS unique_colors
+                FROM ${deckslotTable}
+                JOIN ${cards} ON ${deckslotTable.card_id} = ${cards.id}
+                GROUP BY ${deckslotTable.deck_id}
+            )
             SELECT ${sql.join(columns, sql`, `)},
             EXTRACT(year FROM age(NOW(), deck.updated_at)) AS years,
             EXTRACT(month FROM age(NOW(), deck.updated_at)) AS months,
@@ -391,6 +419,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             LEFT JOIN ${cards} ON ${deckTable.banner} = ${cards.id}
             INNER JOIN ${userTable} ON ${deckTable.creator_id} = ${userTable.id}
             LEFT JOIN deck_colors dc ON ${deckTable.id} = dc.deck_id
+            LEFT JOIN deck_tags dt ON ${deckTable.id} = dt.td_deck_id
             ${whereClause}
             ${finalOrderClause}
         `;
