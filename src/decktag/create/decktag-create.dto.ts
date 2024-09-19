@@ -6,7 +6,7 @@ import {
     Matches,
     MinLength,
 } from "class-validator";
-export class ITagCreateRequestDto {
+export class IDeckTagCreateRequestDto {
     @IsNotEmpty()
     @MinLength(3, { message: "Name must be at least 3 characters long." })
     @IsString()
@@ -21,7 +21,7 @@ export class ITagCreateRequestDto {
     deck_id: string;
 }
 
-export interface ITagCreateResponseDto {
+export interface IDeckTagCreateResponseDto {
     id: string;
     message: string;
 }

@@ -101,6 +101,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
         // userId: string,
     ): Promise<IDeckFindResponseDto | null> {
         try {
+            //todo add deck tags
             const selectSql: SQL = sql`
                 SELECT 
                 deck.id,
@@ -373,24 +374,6 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             orderByClause.length > 0
                 ? sql` ORDER BY ${sql.join(orderByClause, sql`, `)}`
                 : sql` ORDER BY ${deckTable.updated_at} desc`;
-        //todo implement this into the sql later
-        // with deck_tags as (
-        //     SELECT deck.id deck_id,
-        //                 array_agg(tags.name) AS tag_names
-        //                 FROM deck
-        //                 JOIN decktags ON deck.id = decktags.deck_id
-        //                 JOIN tags ON decktags.tag_id = tags.id
-        //                 GROUP BY deck.id),
-        //     deck_colors as (
-        //       SELECT DISTINCT ON (deckslot.deck_id) deck_id,
-        //                 array_agg(DISTINCT LOWER(cards.color)) AS unique_colors
-        //                 FROM deckslot
-        //                 JOIN cards ON deckslot.card_id = cards.id
-        //                 GROUP BY deckslot.deck_id
-        //     )
-        //     select deck.id, dt.deck_id, dt.tag_names, dc.unique_colors from deck
-        //     LEFT JOIN deck_tags dt ON (deck.id = dt.deck_id)
-        //     LEFT JOIN deck_colors dc ON deck.id = dc.deck_id
 
         return sql`
             with deck_tags as (

@@ -1,17 +1,17 @@
 import { provide } from "inversify-binding-decorators";
 import {
-    ITagCreateRequestDto,
-    ITagCreateResponseDto,
-} from "./tag-create.dto";
-import { TagRepository } from "../tag.repository";
-import { TagEntity } from "../tag.entity";
+    IDeckTagCreateRequestDto,
+    IDeckTagCreateResponseDto,
+} from "./decktag-create.dto";
+import { TagRepository } from "../../tag/tag.repository";
+import { TagEntity } from "../../tag/tag.entity";
 import { AppError, Report, StatusCode } from "@expressots/core";
 import { DeckRepository } from "../../deck/deck.repository";
-import { DeckTagRepository } from "../../decktag/decktag.repository";
-import { DeckTagEntity } from "../../decktag/decktag.entity";
+import { DeckTagRepository } from "../decktag.repository";
+import { DeckTagEntity } from "../decktag.entity";
 
-@provide(TagCreateUsecase)
-export class TagCreateUsecase {
+@provide(DeckTagCreateUsecase)
+export class DeckTagCreateUsecase {
     constructor(
         private deckRepository: DeckRepository,
         private tagRepository: TagRepository,
@@ -21,9 +21,9 @@ export class TagCreateUsecase {
         private report: Report,
     ) {}
     public async execute(
-        payload: ITagCreateRequestDto,
+        payload: IDeckTagCreateRequestDto,
         userId: string,
-    ): Promise<ITagCreateResponseDto | AppError> {
+    ): Promise<IDeckTagCreateResponseDto | AppError> {
         try {
             //First, check if the user making this request is the creator of the deck.
             const isDeckCreator: Record<string, string> | null =
@@ -32,7 +32,7 @@ export class TagCreateUsecase {
                 throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
-                    "TagCreateUsecase",
+                    "DeckTagCreateUsecase",
                 );
             }
             //removes all whitespace, special characters, and converts to lowercase
@@ -49,7 +49,7 @@ export class TagCreateUsecase {
                     throw this.report.error(
                         "Failed to create tag globally.",
                         StatusCode.BadRequest,
-                        "TagCreateUsecase",
+                        "DeckTagCreateUsecase",
                     );
                     
                 }
@@ -64,7 +64,7 @@ export class TagCreateUsecase {
                 throw this.report.error(
                     "Tag already exists for this deck.",
                     StatusCode.BadRequest,
-                    "TagCreateUsecase",
+                    "DeckTagCreateUsecase",
                 );
             }
             this.newDeckTag.deck_id = payload.deck_id
@@ -76,7 +76,7 @@ export class TagCreateUsecase {
                 throw this.report.error(
                     `Failed to create deck tag for deck ${payload.deck_id}.`,
                     StatusCode.BadRequest,
-                    "TagCreateUsecase",
+                    "DeckTagCreateUsecase",
                 );
             }
             let resMessage: string = `Tag created successfully for deck ${payload.deck_id}.`;

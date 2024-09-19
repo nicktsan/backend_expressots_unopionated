@@ -4,7 +4,7 @@ import { DeckTagEntity } from "./decktag.entity";
 import { BaseRepository } from "../base-repository";
 import { deckTagsTable, tagsTable} from "../supabase/migrations/schema";
 import { and, eq } from "drizzle-orm";
-import { ITagCreateRequestDto } from "../tag/create/tag-create.dto";
+import { IDeckTagCreateRequestDto } from "./create/decktag-create.dto";
 
 @provide(DeckTagRepository)
 export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
@@ -13,7 +13,7 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
         this.table = deckTagsTable;
     }
 
-    async checkDeckTagExists(payload: ITagCreateRequestDto): Promise<DeckTagEntity[] | null> {
+    async checkDeckTagExists(payload: IDeckTagCreateRequestDto): Promise<DeckTagEntity[] | null> {
         try {
             const res = await this.db
                 .select({
@@ -37,7 +37,7 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
         }
     }
 
-    async findDeckTagsByDeckId(payload: ITagCreateRequestDto): Promise<DeckTagEntity[] | null> {
+    async findDeckTagsByDeckId(payload: IDeckTagCreateRequestDto): Promise<DeckTagEntity[] | null> {
         try {
             const res = await this.db
                 .select({

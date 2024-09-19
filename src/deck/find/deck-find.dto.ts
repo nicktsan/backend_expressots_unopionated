@@ -11,6 +11,7 @@ export interface ISimpleDeckFindResponseDto {
 }
 
 export interface IDeckFindResponseDto {
+    //todo add deck tags
     id: string;
     name: string;
     creator_id: string;
