@@ -38,9 +38,11 @@ export class DeckTagCreateUsecase {
             //removes all whitespace, special characters, and converts to lowercase
             this.newTag.name = payload.name;
 
+            //Check if the tag exists globally.
             let tagExists: TagEntity | null=
                 await this.tagRepository.checkByNameLower(payload.name);
             let globalTagMessage: string = " Tag already exists globally.";
+            //If tag does not exist globally, create it in the tag table.
             if (!tagExists){
                 const globalTagRes: TagEntity | null = await this.tagRepository.create(
                     this.newTag,
@@ -56,6 +58,7 @@ export class DeckTagCreateUsecase {
                 tagExists = globalTagRes;
                 globalTagMessage = "";
             }
+            //Check if the current deck already has the tag.
             const deckTagExists: DeckTagEntity[] | null = await this.deckTagRepository.checkDeckTagExists({
                 deck_id: payload.deck_id,
                 name: payload.name,
@@ -67,6 +70,7 @@ export class DeckTagCreateUsecase {
                     "DeckTagCreateUsecase",
                 );
             }
+            //If the current deck doesn't have the tag, add the tag to the deck.
             this.newDeckTag.deck_id = payload.deck_id
             this.newDeckTag.tag_id = tagExists.id
             const res: DeckTagEntity | null = await this.deckTagRepository.create(

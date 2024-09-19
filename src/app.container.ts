@@ -6,6 +6,7 @@ import { DeckModule } from "./deck/deck.module";
 import { DeckslotModule } from "./deckslot/deckslot.module";
 import { CardModule } from "./card/card.module";
 import { TagModule } from "./tag/tag.module";
+import { DeckTagModule } from "./decktag/decktag.module";
 
 export const appContainer: AppContainer = new AppContainer({
     autoBindInjectable: false,
@@ -20,4 +21,5 @@ export const container = appContainer.create([
     DeckslotModule,
     CardModule,
     TagModule,
+    DeckTagModule,
 ]);

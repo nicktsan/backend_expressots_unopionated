@@ -101,8 +101,15 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
         // userId: string,
     ): Promise<IDeckFindResponseDto | null> {
         try {
-            //todo add deck tags
             const selectSql: SQL = sql`
+                with deck_tags as (
+                    SELECT ${deckTable.id} td_deck_id,
+                    array_agg(${tagsTable.name}) AS tag_names
+                    FROM ${deckTable}
+                    JOIN ${deckTagsTable} ON ${deckTable.id} = ${deckTagsTable.deck_id}
+                    JOIN ${tagsTable} ON ${deckTagsTable.tag_id} = ${tagsTable.id}
+                    GROUP BY ${deckTable.id}
+                )
                 SELECT 
                 deck.id,
                 deck.name,
@@ -113,6 +120,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 deck.views,
                 deck.visibility,
                 deck.banner,
+                dt.tag_names,
                 cards.image_link AS kr_banner_url,
                 CONCAT('https://${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_PROJECT_ID)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_BUCKET)}/', ${cards.code}, '.png') AS en_banner_url,
                 ${this.formatDateTime(deckTable.updated_at)} AS updated_at,
@@ -125,21 +133,10 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 FROM deck 
                 INNER JOIN "user" ON deck.creator_id = "user".id
                 LEFT JOIN cards ON deck.banner = cards.id
+                LEFT JOIN deck_tags dt ON ${deckTable.id} = dt.td_deck_id
                 WHERE deck.id = ${id}
             `;
-            // let whereSql: SQL = sql`
-            //     AND deck.visibility IN ('public', 'unlisted');
-            // `;
-            // if (userId) {
-            //     whereSql = sql`
-            //         AND (
-            //         deck.visibility IN ('public', 'unlisted')
-            //         or
-            //         deck.creator_id = ${userId}
-            //         )
-            //     `;
-            // }
-            // const finalQuery: SQL = sql`${selectSql} ${whereSql}`;
+
             const finalQuery: SQL = sql`${selectSql}`;
             // const pgDialect = new PgDialect();
             // console.log(pgDialect.sqlToQuery(finalQuery));
@@ -152,6 +149,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                     creator_id: res.rows[0].creator_id,
                     creator_username: res.rows[0].creator_username,
                     banner: res.rows[0].banner,
+                    tag_names: res.rows[0].tag_names,
                     kr_banner_url: res.rows[0].kr_banner_url,
                     en_banner_url: res.rows[0].en_banner_url,
                     description: res.rows[0].description,

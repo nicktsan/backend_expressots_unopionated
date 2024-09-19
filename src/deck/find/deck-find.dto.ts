@@ -11,12 +11,12 @@ export interface ISimpleDeckFindResponseDto {
 }
 
 export interface IDeckFindResponseDto {
-    //todo add deck tags
     id: string;
     name: string;
     creator_id: string;
     creator_username: string;
     banner: number | null;
+    tag_names: string[] | null;
     kr_banner_url: string | null;
     en_banner_url: string | null;
     description: string | null;
