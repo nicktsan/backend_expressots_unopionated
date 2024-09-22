@@ -5,6 +5,7 @@ import { BaseRepository } from "../base-repository";
 import { deckTagsTable, tagsTable} from "../supabase/migrations/schema";
 import { and, eq } from "drizzle-orm";
 import { IDeckTagCreateRequestDto } from "./create/decktag-create.dto";
+import { IDecktagEditRequestDto } from "./edit/decktag-edit.dto";
 
 @provide(DeckTagRepository)
 export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
@@ -13,6 +14,7 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
         this.table = deckTagsTable;
     }
 
+    //Check if a deck tag is associated with a certain deck.
     async checkDeckTagExists(payload: IDeckTagCreateRequestDto): Promise<DeckTagEntity[] | null> {
         try {
             const res = await this.db
@@ -31,12 +33,16 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
                 );
             return res;
         } catch (error) {
-            console.log("error occured while finding deck tag by deck id: ");
+            console.log("error occured while checking if deck tag exists: ");
             console.log(error);
+            if (error instanceof Error) {
+                throw error;
+            }
             return null;
         }
     }
 
+    //Get all deck tags from a deck by deck id.
     async findDeckTagsByDeckId(payload: IDeckTagCreateRequestDto): Promise<DeckTagEntity[] | null> {
         try {
             const res = await this.db
@@ -52,6 +58,9 @@ export class DeckTagRepository extends BaseRepository<DeckTagEntity> {
         } catch (error) {
             console.log("error occured while finding deck tag by deck id: ");
             console.log(error);
+            if (error instanceof Error){
+                throw error;
+            }
             return null;
         }
     }

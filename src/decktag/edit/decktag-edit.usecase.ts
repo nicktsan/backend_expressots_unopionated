@@ -1,47 +1,43 @@
 import { provide } from "inversify-binding-decorators";
 import {
-    IDeckTagCreateRequestDto,
-    IDeckTagCreateResponseDto,
-} from "./decktag-create.dto";
+    IDecktagEditRequestDto,
+    IDecktagEditResponseDto,
+} from "./decktag-edit.dto";
+import { DeckRepository } from "../../deck/deck.repository";
+import { AppError, Report, StatusCode } from "@expressots/core";
 import { TagRepository } from "../../tag/tag.repository";
 import { TagEntity } from "../../tag/tag.entity";
-import { AppError, Report, StatusCode } from "@expressots/core";
-import { DeckRepository } from "../../deck/deck.repository";
-import { DeckTagRepository } from "../decktag.repository";
 import { DeckTagEntity } from "../decktag.entity";
+import { DeckTagRepository } from "../decktag.repository";
 
-@provide(DeckTagCreateUsecase)
-export class DeckTagCreateUsecase {
+@provide(DecktagEditUsecase)
+export class DecktagEditUsecase {
     constructor(
         private deckRepository: DeckRepository,
-        private tagRepository: TagRepository,
         private deckTagRepository: DeckTagRepository,
+        private tagRepository: TagRepository,
         private newTag: TagEntity,
-        private newDeckTag: DeckTagEntity,
         private report: Report,
     ) {}
     public async execute(
-        payload: IDeckTagCreateRequestDto,
+        payload: IDecktagEditRequestDto,
         userId: string,
-    ): Promise<IDeckTagCreateResponseDto | AppError> {
+    ): Promise<IDecktagEditResponseDto> {
         try {
-            //First, check if the user making this request is the creator of the deck.
+            //1. Check if the user making this request is the creator of the deck.
             const isDeckCreator: Record<string, string> | null =
                 await this.deckRepository.checkCreator(payload.deck_id, userId);
             if (!isDeckCreator) {
                 throw this.report.error(
                     "User is not the creator of the deck.",
                     StatusCode.BadRequest,
-                    "DeckTagCreateUsecase",
+                    "DecktagEditUsecase",
                 );
             }
-            //removes all whitespace, special characters, and converts to lowercase
+            //2. Check if the tag exists globally.
             this.newTag.name = payload.name;
-
-            //Check if the tag exists globally.
             let tagExists: TagEntity | null=
                 await this.tagRepository.checkByNameLower(payload.name);
-            let globalTagMessage: string = " Tag already exists globally.";
             //If tag does not exist globally, create it in the tag table.
             if (!tagExists){
                 const globalTagRes: TagEntity | null = await this.tagRepository.create(
@@ -51,15 +47,14 @@ export class DeckTagCreateUsecase {
                     throw this.report.error(
                         "Failed to create tag globally.",
                         StatusCode.BadRequest,
-                        "DeckTagCreateUsecase",
+                        "DecktagEditUsecase",
                     );
                     
                 }
                 tagExists = globalTagRes;
-                globalTagMessage = "";
             }
-            //Check if the current deck already has the tag.
-            const deckTagExists: DeckTagEntity[] | null = await this.deckTagRepository.checkDeckTagExists({
+            //3. Check if the current deck already has the tag.
+            const deckTagExists: DeckTagEntity[] | null  = await this.deckTagRepository.checkDeckTagExists({
                 deck_id: payload.deck_id,
                 name: payload.name,
             });
@@ -67,32 +62,35 @@ export class DeckTagCreateUsecase {
                 throw this.report.error(
                     "Tag already exists for this deck.",
                     StatusCode.BadRequest,
-                    "DeckTagCreateUsecase",
+                    "DecktagEditUsecase",
                 );
             }
-            //If the current deck doesn't have the tag, add the tag to the deck.
-            this.newDeckTag.deck_id = payload.deck_id
-            this.newDeckTag.tag_id = tagExists.id
-            const res: DeckTagEntity | null = await this.deckTagRepository.create(
-                this.newDeckTag,
+            
+            //4. Since the tag does not exist for the deck, update the old tag
+            const updatedDeckTagProps: DeckTagEntity = {
+                id: payload.id,
+                deck_id: payload.deck_id,
+                tag_id: tagExists.id,
+            }
+            const updatedDeckTag: DeckTagEntity | null = await this.deckTagRepository.update(
+                updatedDeckTagProps,
+                false,
             );
-            if (!res) {
+
+            if (!updatedDeckTag) {
                 throw this.report.error(
-                    `Failed to create deck tag for deck ${payload.deck_id}.`,
+                    `Failed to update deck tag ${payload.id}.`,
                     StatusCode.BadRequest,
-                    "DeckTagCreateUsecase",
+                    "DecktagEditUsecase",
                 );
-            }
-            let resMessage: string = `Tag created successfully for deck ${payload.deck_id}.`;
-            if (tagExists) {
-                resMessage = resMessage + globalTagMessage
             }
             return {
-                id: res.id,
-                message: resMessage,
+                id: updatedDeckTag.id,
+                message: `Deck tag updated successfully.`,
             };
+            
         } catch (error: any) {
-            console.log("Error occured during deck tag creation:");
+            console.log("Error occured during deck update:");
             throw error;
         }
     }

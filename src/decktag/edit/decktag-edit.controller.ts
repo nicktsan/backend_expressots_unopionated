@@ -1,31 +1,31 @@
 import {
-    Delete,
+    Patch,
     body,
     controller,
     request,
     response,
 } from "@expressots/adapter-express";
 import { BaseController, StatusCode, ValidateDTO } from "@expressots/core";
-import { DeckTagDeleteUsecase } from "./decktag-delete.usecase";
+import { DecktagEditUsecase } from "./decktag-edit.usecase";
 import cookieParser from "cookie-parser";
-import { IDeckTagDeleteRequestDto } from "./decktag-delete.dto";
+import { IDecktagEditRequestDto } from "./decktag-edit.dto";
 import { Response, Request } from "express";
 import { AuthSupabaseMiddleware } from "../../auth/supabase/auth-supabase.middleware";
 
-@controller("/decktag/delete")
-export class DeckTagDeleteController extends BaseController {
-    constructor(private deckTagDeleteUsecase: DeckTagDeleteUsecase) {
+@controller("/decktag/update")
+export class DecktagEditController extends BaseController {
+    constructor(private decktagEditUsecase: DecktagEditUsecase) {
         super();
     }
 
-    @Delete(
+    @Patch(
         "",
         cookieParser(),
-        ValidateDTO(IDeckTagDeleteRequestDto),
+        ValidateDTO(IDecktagEditRequestDto),
         AuthSupabaseMiddleware,
     )
     async execute(
-        @body() payload: IDeckTagDeleteRequestDto,
+        @body() payload: IDecktagEditRequestDto,
         @response() res: Response,
         @request() req: Request,
     ): Promise<void> {
@@ -33,7 +33,7 @@ export class DeckTagDeleteController extends BaseController {
         // console.log("payload: ")
         // console.log(payload)
         return this.callUseCase(
-            await this.deckTagDeleteUsecase.execute(
+            await this.decktagEditUsecase.execute(
                 payload,
                 req.headers["userid"] as string,
             ),

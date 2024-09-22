@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsUUID } from "class-validator";
 export class IDeckTagDeleteRequestDto {
+    //id in deckTagTable
     @IsNotEmpty()
     @IsUUID()
     id: string;
