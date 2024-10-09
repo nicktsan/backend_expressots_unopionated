@@ -28,7 +28,6 @@ export class DeckslotDeleteUsecase {
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                
             }
 
             // check if deckslot is already in database.
@@ -46,7 +45,6 @@ export class DeckslotDeleteUsecase {
                     StatusCode.BadRequest,
                     "Failed to delete deckslot.",
                 );
-                
             }
             return res;
         } catch (error: any) {

@@ -16,7 +16,8 @@ export interface IDeckFindResponseDto {
     creator_id: string;
     creator_username: string;
     banner: number | null;
-    tag_names: string[] | null;
+    //decktag_info is an array of (${tagsTable.name} || '|' || ${deckTagsTable.id}) objects
+    decktag_info: string[] | null;
     kr_banner_url: string | null;
     en_banner_url: string | null;
     description: string | null;

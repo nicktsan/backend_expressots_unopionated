@@ -32,7 +32,6 @@ export class DeckslotUpdateQuantityUsecase {
                     StatusCode.BadRequest,
                     "User is not the creator of the deck.",
                 );
-                
             }
 
             const res: IDeckslotUpdateQuantityResponseDto | null =
@@ -43,7 +42,6 @@ export class DeckslotUpdateQuantityUsecase {
                     StatusCode.NotFound,
                     "Failed to update deckslot quantity.",
                 );
-                
             }
 
             //check if quantity is less than 1. If it is, delete the record.
@@ -63,7 +61,6 @@ export class DeckslotUpdateQuantityUsecase {
                         StatusCode.BadRequest,
                         "Failed to delete deckslot.",
                     );
-                    
                 }
                 res.message =
                     "Deckslot deleted due to quantity falling below 1.";

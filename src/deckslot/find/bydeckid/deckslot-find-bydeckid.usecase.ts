@@ -24,7 +24,6 @@ export class DeckslotFindBydeckidUsecase {
                 StatusCode.NotFound,
                 "deck slots not found by id",
             );
-            
         }
 
         // console.log("res in deck-find.usecase(execute): ")

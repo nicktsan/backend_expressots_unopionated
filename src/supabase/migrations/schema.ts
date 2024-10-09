@@ -217,11 +217,8 @@ export const deckslotTable = pgTable(
 export const tagsTable = pgTable(
     "tags",
     {
-        id: uuid("id")
-            .notNull(),
-        name: text("name")
-            .unique()
-            .notNull(), //Add minimum length 3 constraint in sql
+        id: uuid("id").notNull(),
+        name: text("name").unique().notNull(), //Add minimum length 3 constraint in sql
     },
     (table) => {
         return {
@@ -236,8 +233,7 @@ export const tagsTable = pgTable(
 export const deckTagsTable = pgTable(
     "decktags",
     {
-        id: uuid("id")
-            .notNull(),
+        id: uuid("id").notNull(),
         deck_id: uuid("deck_id")
             .notNull()
             .references(() => deckTable.id, { onDelete: "cascade" }),

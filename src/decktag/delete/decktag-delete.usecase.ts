@@ -3,7 +3,10 @@
 // @provide(DeleteUsecase)
 // export class DeleteUsecase {}
 import { provide } from "inversify-binding-decorators";
-import { IDeckTagDeleteRequestDto, IDeckTagDeleteResponseDto } from "./decktag-delete.dto";
+import {
+    IDeckTagDeleteRequestDto,
+    IDeckTagDeleteResponseDto,
+} from "./decktag-delete.dto";
 import { DeckTagRepository } from "../decktag.repository";
 import { DeckRepository } from "../../deck/deck.repository";
 import { AppError, Report, StatusCode } from "@expressots/core";
@@ -31,7 +34,9 @@ export class DeckTagDeleteUsecase {
                 );
             }
 
-            const res: boolean = await this.deckTagRepository.delete(payload.id);
+            const res: boolean = await this.deckTagRepository.delete(
+                payload.id,
+            );
             if (!res) {
                 throw this.report.error(
                     "Failed to delete deck tag.",

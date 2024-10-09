@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { provide } from "inversify-binding-decorators";
 import { TagEntity } from "./tag.entity";
 import { BaseRepository } from "../base-repository";
-import { tagsTable} from "../supabase/migrations/schema";
+import { tagsTable } from "../supabase/migrations/schema";
 import { eq, like } from "drizzle-orm";
 
 @provide(TagRepository)
@@ -16,7 +16,6 @@ export class TagRepository extends BaseRepository<TagEntity> {
     //names are automatically validated by the dto to check if it only contains lowercase letters, no white space, and no special characters.
     async checkByNameLower(name: string): Promise<TagEntity | null> {
         try {
-
             const res = await this.db
                 .select({
                     id: tagsTable.id,
@@ -37,7 +36,6 @@ export class TagRepository extends BaseRepository<TagEntity> {
     //names are automatically validated by the dto to check if it only contains lowercase letters, no white space, and no special characters.
     async searchByNameLower(name: string): Promise<TagEntity[] | null> {
         try {
-
             const res = await this.db
                 .select({
                     id: tagsTable.id,

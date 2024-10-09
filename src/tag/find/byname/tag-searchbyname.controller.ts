@@ -1,9 +1,4 @@
-import {
-    Get,
-    controller,
-    query,
-    response,
-} from "@expressots/adapter-express";
+import { Get, controller, query, response } from "@expressots/adapter-express";
 import { BaseController, StatusCode } from "@expressots/core";
 import { TagSearchByNameUsecase } from "./tag-searchbyname.usecase";
 import cookieParser from "cookie-parser";
@@ -16,11 +11,7 @@ export class TagSearchByNameController extends BaseController {
     constructor(private tagSearchByNameUsecase: TagSearchByNameUsecase) {
         super();
     }
-    @Get(
-        "",
-        cookieParser(),
-        ValidateReqQueryDTO(ITagSearchByNameRequestDto),
-    )
+    @Get("", cookieParser(), ValidateReqQueryDTO(ITagSearchByNameRequestDto))
     async execute(
         @response() res: Response,
         @query() reqQuery: ITagSearchByNameRequestDto,

@@ -12,7 +12,8 @@ export class IDeckTagCreateRequestDto {
     @IsString()
     @IsLowercase()
     @Matches(/^[a-z0-9]+$/, {
-        message: 'String must contain only lowercase letters and numbers, with no spaces or special characters'
+        message:
+            "String must contain only lowercase letters and numbers, with no spaces or special characters",
     })
     name: string;
 

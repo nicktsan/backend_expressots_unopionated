@@ -34,61 +34,66 @@ export class DecktagEditUsecase {
                     "DecktagEditUsecase",
                 );
             }
-            //2. Check if the tag exists globally.
-            this.newTag.name = payload.name;
-            let tagExists: TagEntity | null=
-                await this.tagRepository.checkByNameLower(payload.name);
-            //If tag does not exist globally, create it in the tag table.
-            if (!tagExists){
-                const globalTagRes: TagEntity | null = await this.tagRepository.create(
-                    this.newTag,
-                );
-                if (!globalTagRes) {
+            //Loop through each editted tag.
+
+            for (const edittedTag of payload.edittedTags) {
+                //2. For each editted tag, check if the tag exist globally. Also check if the current deck
+                // has the tag.
+                this.newTag.name = edittedTag.name;
+                let tagExists: TagEntity | null =
+                    await this.tagRepository.checkByNameLower(edittedTag.name);
+                //If tag does not exist globally, create it in the tag table.
+                if (!tagExists) {
+                    const globalTagRes: TagEntity | null =
+                        await this.tagRepository.create(this.newTag);
+                    if (!globalTagRes) {
+                        throw this.report.error(
+                            "Failed to create tag globally.",
+                            StatusCode.BadRequest,
+                            "DecktagEditUsecase",
+                        );
+                    }
+                    tagExists = globalTagRes;
+                }
+                //3. Check if the current deck already has the tag.
+                const deckTagExists: DeckTagEntity[] | null =
+                    await this.deckTagRepository.checkDeckTagExists({
+                        deck_id: payload.deck_id,
+                        name: edittedTag.name,
+                    });
+                if (deckTagExists && deckTagExists.length > 0) {
                     throw this.report.error(
-                        "Failed to create tag globally.",
+                        "Tag already exists for this deck.",
                         StatusCode.BadRequest,
                         "DecktagEditUsecase",
                     );
-                    
                 }
-                tagExists = globalTagRes;
-            }
-            //3. Check if the current deck already has the tag.
-            const deckTagExists: DeckTagEntity[] | null  = await this.deckTagRepository.checkDeckTagExists({
-                deck_id: payload.deck_id,
-                name: payload.name,
-            });
-            if (deckTagExists && deckTagExists.length > 0) {
-                throw this.report.error(
-                    "Tag already exists for this deck.",
-                    StatusCode.BadRequest,
-                    "DecktagEditUsecase",
-                );
-            }
-            
-            //4. Since the tag does not exist for the deck, update the old tag
-            const updatedDeckTagProps: DeckTagEntity = {
-                id: payload.id,
-                deck_id: payload.deck_id,
-                tag_id: tagExists.id,
-            }
-            const updatedDeckTag: DeckTagEntity | null = await this.deckTagRepository.update(
-                updatedDeckTagProps,
-                false,
-            );
 
-            if (!updatedDeckTag) {
-                throw this.report.error(
-                    `Failed to update deck tag ${payload.id}.`,
-                    StatusCode.BadRequest,
-                    "DecktagEditUsecase",
-                );
+                //4. Since the tag does not exist for the deck, update the old tag
+                const updatedDeckTagProps: DeckTagEntity = {
+                    id: edittedTag.id,
+                    deck_id: payload.deck_id,
+                    tag_id: tagExists.id,
+                };
+                const updatedDeckTag: DeckTagEntity | null =
+                    await this.deckTagRepository.update(
+                        updatedDeckTagProps,
+                        false,
+                    );
+
+                if (!updatedDeckTag) {
+                    throw this.report.error(
+                        `Failed to update deck tag ${edittedTag.id}.`,
+                        StatusCode.BadRequest,
+                        "DecktagEditUsecase",
+                    );
+                }
             }
+
             return {
-                id: updatedDeckTag.id,
-                message: `Deck tag updated successfully.`,
+                deck_id: payload.deck_id,
+                message: `Deck tags of ${payload.deck_id} updated successfully.`,
             };
-            
         } catch (error: any) {
             console.log("Error occured during deck update:");
             throw error;

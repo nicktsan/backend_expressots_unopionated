@@ -39,30 +39,29 @@ export class DeckTagCreateUsecase {
             this.newTag.name = payload.name;
 
             //Check if the tag exists globally.
-            let tagExists: TagEntity | null=
+            let tagExists: TagEntity | null =
                 await this.tagRepository.checkByNameLower(payload.name);
             let globalTagMessage: string = " Tag already exists globally.";
             //If tag does not exist globally, create it in the tag table.
-            if (!tagExists){
-                const globalTagRes: TagEntity | null = await this.tagRepository.create(
-                    this.newTag,
-                );
+            if (!tagExists) {
+                const globalTagRes: TagEntity | null =
+                    await this.tagRepository.create(this.newTag);
                 if (!globalTagRes) {
                     throw this.report.error(
                         "Failed to create tag globally.",
                         StatusCode.BadRequest,
                         "DeckTagCreateUsecase",
                     );
-                    
                 }
                 tagExists = globalTagRes;
                 globalTagMessage = "";
             }
             //Check if the current deck already has the tag.
-            const deckTagExists: DeckTagEntity[] | null = await this.deckTagRepository.checkDeckTagExists({
-                deck_id: payload.deck_id,
-                name: payload.name,
-            });
+            const deckTagExists: DeckTagEntity[] | null =
+                await this.deckTagRepository.checkDeckTagExists({
+                    deck_id: payload.deck_id,
+                    name: payload.name,
+                });
             if (deckTagExists && deckTagExists.length > 0) {
                 throw this.report.error(
                     "Tag already exists for this deck.",
@@ -71,11 +70,10 @@ export class DeckTagCreateUsecase {
                 );
             }
             //If the current deck doesn't have the tag, add the tag to the deck.
-            this.newDeckTag.deck_id = payload.deck_id
-            this.newDeckTag.tag_id = tagExists.id
-            const res: DeckTagEntity | null = await this.deckTagRepository.create(
-                this.newDeckTag,
-            );
+            this.newDeckTag.deck_id = payload.deck_id;
+            this.newDeckTag.tag_id = tagExists.id;
+            const res: DeckTagEntity | null =
+                await this.deckTagRepository.create(this.newDeckTag);
             if (!res) {
                 throw this.report.error(
                     `Failed to create deck tag for deck ${payload.deck_id}.`,
@@ -85,7 +83,7 @@ export class DeckTagCreateUsecase {
             }
             let resMessage: string = `Tag created successfully for deck ${payload.deck_id}.`;
             if (tagExists) {
-                resMessage = resMessage + globalTagMessage
+                resMessage = resMessage + globalTagMessage;
             }
             return {
                 id: res.id,

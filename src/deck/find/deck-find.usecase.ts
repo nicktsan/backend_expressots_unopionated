@@ -22,7 +22,6 @@ export class DeckFindUsecase {
                 StatusCode.NotFound,
                 `Deck ${payload.id} not found`,
             );
-            
         }
         if (
             res.creator_id !== userId &&
@@ -33,7 +32,6 @@ export class DeckFindUsecase {
                 StatusCode.BadRequest,
                 `User is not authorized to access deck ${payload.id}`,
             );
-            
         }
         return res;
     }

@@ -19,7 +19,6 @@ export class UserFindUseCase {
                 StatusCode.NotFound,
                 "user-find-usecase",
             );
-            
         }
 
         return {

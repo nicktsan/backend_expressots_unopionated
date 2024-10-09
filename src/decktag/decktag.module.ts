@@ -4,4 +4,8 @@ import { DeckTagCreateController } from "./create/decktag-create.controller";
 import { DeckTagDeleteController } from "./delete/decktag-delete.controller";
 import { DecktagEditController } from "./edit/decktag-edit.controller";
 
-export const DeckTagModule: ContainerModule = CreateModule([DeckTagCreateController, DeckTagDeleteController, DecktagEditController]);
+export const DeckTagModule: ContainerModule = CreateModule([
+    DeckTagCreateController,
+    DeckTagDeleteController,
+    DecktagEditController,
+]);

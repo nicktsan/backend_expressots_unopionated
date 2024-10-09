@@ -33,7 +33,6 @@ export class DeckCreateUsecase {
                     StatusCode.BadRequest,
                     "Deck name is already taken",
                 );
-                
             }
 
             const res: DeckEntity | null = await this.deckRepository.create(
@@ -45,7 +44,6 @@ export class DeckCreateUsecase {
                     StatusCode.BadRequest,
                     "Failed to create deck.",
                 );
-                
             }
             return {
                 id: res.id,

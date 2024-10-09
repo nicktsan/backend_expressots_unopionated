@@ -3,7 +3,14 @@ import { provide } from "inversify-binding-decorators";
 import { SQL, asc, desc, eq, and, or, inArray, sql, like } from "drizzle-orm";
 import { DeckEntity } from "./deck.entity";
 import { BaseRepository } from "../base-repository";
-import { deckTable, userTable, cards, deckslotTable, deckTagsTable, tagsTable } from "../supabase/migrations/schema";
+import {
+    deckTable,
+    userTable,
+    cards,
+    deckslotTable,
+    deckTagsTable,
+    tagsTable,
+} from "../supabase/migrations/schema";
 import { IDeckFindRequestByCreatorIdDto } from "./find/byCreatorId/deck-find-byCreatorId.dto";
 import {
     IDeckFindResponseDto,
@@ -104,7 +111,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
             const selectSql: SQL = sql`
                 with deck_tags as (
                     SELECT ${deckTable.id} td_deck_id,
-                    array_agg(${tagsTable.name}) AS tag_names
+                    array_agg(${tagsTable.name} || '|' || ${deckTagsTable.id}) AS decktag_info
                     FROM ${deckTable}
                     JOIN ${deckTagsTable} ON ${deckTable.id} = ${deckTagsTable.deck_id}
                     JOIN ${tagsTable} ON ${deckTagsTable.tag_id} = ${tagsTable.id}
@@ -120,7 +127,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                 deck.views,
                 deck.visibility,
                 deck.banner,
-                dt.tag_names,
+                dt.decktag_info,
                 cards.image_link AS kr_banner_url,
                 CONCAT('https://${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_PROJECT_ID)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE)}${sql.raw(ENV.SUPABASE.SUPABASE_STORAGE_BUCKET)}/', ${cards.code}, '.png') AS en_banner_url,
                 ${this.formatDateTime(deckTable.updated_at)} AS updated_at,
@@ -149,7 +156,7 @@ export class DeckRepository extends BaseRepository<DeckEntity> {
                     creator_id: res.rows[0].creator_id,
                     creator_username: res.rows[0].creator_username,
                     banner: res.rows[0].banner,
-                    tag_names: res.rows[0].tag_names,
+                    decktag_info: res.rows[0].decktag_info,
                     kr_banner_url: res.rows[0].kr_banner_url,
                     en_banner_url: res.rows[0].en_banner_url,
                     description: res.rows[0].description,
